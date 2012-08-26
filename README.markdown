@@ -1,5 +1,8 @@
 # scuttlebutt
 
+<img src=https://secure.travis-ci.org/dominictarr/scuttlebutt.png?branch=master>
+
+
 This seems like a silly name, but I assure you, this is real science. 
 read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf
 
