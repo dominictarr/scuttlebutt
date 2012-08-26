@@ -7,5 +7,12 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/dominictarr/scuttlebutt.git"
+  },
+  "dependencies": {
+    "iterate": "0.0.2",
+    "duplex": "~0.1.2"
+  },
+  "scripts": {
+    "test": "node test/index.js && node test/integrate.js && node test/integrate2.js"
   }
 }

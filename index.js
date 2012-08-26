@@ -5,7 +5,6 @@ var i = require('iterate')
 var timestamp = require('./timestamp')
 var duplex = require('duplex')
 
-
 function createID () {
   return i.map(3, function (i) {
     return Math.random().toString(16).substring(2).toUpperCase()
@@ -35,7 +34,6 @@ function Model (id) {
     var cur = emitter.timestamps[key]
     var latest = emitter.sources[source]
     var update = [].slice.call(arguments)
-    console.log('UPDATE', emitter.id, update)
     //if this message is older for it's source,
     //ignore it. it's out of order.
     //each node must emit it's changes in order!
@@ -101,7 +99,7 @@ function Model (id) {
           //merge with the current list of sources.
 
           sources = data
-          i.each(emitter.histroy(data), d.emitData.bind(d)) 
+          i.each(emitter.histroy(sources), d.emitData.bind(d)) 
 
           this.emit('sync')
         } 
@@ -126,7 +124,8 @@ function Model (id) {
   emitter.filter = function (e, filter) {
     var source = e[2]
     var ts = e[3]
-    return (!filter || !filter[source] || filter[source] < ts)   }
+    return (!filter || !filter[source] || filter[source] < ts)
+  }
 
   emitter.histroy = function (filter) {
     var h = []
