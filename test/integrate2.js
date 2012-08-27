@@ -1,4 +1,4 @@
-var gossip = require('..')
+var gossip = require('../model')
 var assert = require('assert')
 
 var g1 = gossip()

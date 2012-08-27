@@ -4,137 +4,143 @@ var EventEmitter = require('events').EventEmitter
 var i = require('iterate')
 var timestamp = require('./timestamp')
 var duplex = require('duplex')
+var inherits = require('util').inherits
 
-function createID () {
-  return i.map(3, function (i) {
-    return Math.random().toString(16).substring(2).toUpperCase()
-  }).join('')
+var createID = require('./id')
+
+exports = 
+module.exports = Scuttlebutt
+
+exports.createID = createID
+exports.timestamp = timestamp
+
+function validate (data) {
+  //must be an 4 element array
+  //string, *, string, number
+  //log a message and ignore if invalid.
+  function error () {
+    console.error('invalid update', data)
+  }
+  var key = data[0], source = data[2], ts = data[3]
+
+  /*console.log(!Array.isArray(data) 
+    , data.length !== 4 
+    , 'string'    !== typeof key
+    , 'string'    !== typeof source
+    , 'number'    !== typeof ts
+  )*/
+
+  if(  !Array.isArray(data) 
+    || data.length !== 4 
+    || 'string'    !== typeof key
+    || 'string'    !== typeof source
+    || 'number'    !== typeof ts
+  ) 
+    return error(), false
+  return true
 }
 
-module.exports = Model
+inherits (Scuttlebutt, EventEmitter)
 
-Model.createID = createID
-Model.timestamp = timestamp
-
-function Model (id) {
-  var emitter = new EventEmitter()
+function Scuttlebutt (id) {
+  if(!(this instanceof Scuttlebutt)) return new Scuttlebutt(id)
+  var emitter = this
   
-  emitter.store = {}
   emitter.timestamps = {}
   emitter.sources = {}
   emitter.id = id = id || createID()
-  emitter.set = function (k, v) {
-    emitter._update(k, v, id, timestamp())
-  }
-  emitter.get = function (k) {
-    if(emitter.store[k])
-      return emitter.store[k][1]
-  }
-  emitter._update = function (key, value, source, ts) {
-    var cur = emitter.timestamps[key]
-    var latest = emitter.sources[source]
-    var update = [].slice.call(arguments)
-    //if this message is older for it's source,
-    //ignore it. it's out of order.
-    //each node must emit it's changes in order!
-    if(latest && latest >= ts)
-      return emitter.emit('old_data', update), false
- 
-    emitter.sources[source] = ts
+}
 
-    //check if this message is older than
-    //the value we already have.
-    //do nothing if so
-    //emit an 'old-data' event because i'll want to track how many
-    //unnecessary messages are sent.
-    if(cur && cur > ts)
-     return emitter.emit('old-data', [key, value, source, ts]), false
+var sb = Scuttlebutt.prototype
 
-    emitter.store[key] = update
-    //key, value, 
-    emitter.emit('data', update)
-    emitter.emit('update', key, value, source, ts)
 
-    return true
+sb.localUpdate = function (key, value) {
+  this._update(key, value, this.id, timestamp())
+  return this
+}
 
-    }
+//checks whether this update is valid.
 
-  function validate (data) {
-    //must be an 4 element array
-    //string, *, string, number
-    //log a message and ignore if invalid.
-    function error () {
-      console.error('invalid update', data)
-    }
-    var key = data[0], source = data[2], ts = data[3]
-    /*console.log(!Array.isArray(data) 
-      , data.length !== 4 
-      , 'string'    !== typeof key
-      , 'string'    !== typeof source
-      , 'number'    !== typeof ts
-    )*/
-    if(  !Array.isArray(data) 
-      || data.length !== 4 
-      || 'string'    !== typeof key
-      || 'string'    !== typeof source
-      || 'number'    !== typeof ts
-    ) 
-      return error(), false
+sb._update = function (key, value, source, ts) {
+  var emitter = this
+  var cur = this.timestamps[key]
+  var latest = this.sources[source]
+  var update = [].slice.call(arguments)
 
-    return true
-  }
+  //if this message is older for it's source,
+  //ignore it. it's out of order.
+  //each node must emit it's changes in order!
 
-  emitter.createStream = function () {
-    //the sources for the remote end.
-    var sources = {}
-    var d = duplex()
-      .on('write', function (data) {
-      //if it's an array, it's an update.
-      //if it's an object, it's a scuttlebut digest.
-        if(Array.isArray(data) && validate(data))
-          return emitter._update.apply(emitter, data)
-        if('object' === typeof data && data) {
-          //when the digest is recieved from the other end,
-          //send the histroy.
-          //merge with the current list of sources.
+  if(latest && latest >= ts)
+    return this.emit('old_data', update), false
 
-          sources = data
-          i.each(emitter.histroy(sources), d.emitData.bind(d)) 
+  this.sources[source] = ts
 
-          this.emit('sync')
-        } 
-      }).on('ended', function () { d.emitEnd() })
-      .on('close', function () {
-        emitter.removeListener('update', onUpdate)
-      })
-   
-    function onUpdate (key, value, source, ts) {
-      if(sources[source] && sources[source] >= ts)
-        return //the other end has already seen this message. 
-      d.emit('data', [key, value, source, ts])
-      //update source
-      sources[source] = ts
-    }
-    d.emitData(emitter.sources)
-    
-    emitter.on('update', onUpdate)
-    return d
-  }
+  //check if this message is older than
+  //the value we already have.
+  //do nothing if so
+  //emit an 'old-data' event because i'll want to track how many
+  //unnecessary messages are sent.
+  if(cur && cur > ts)
+   return this.emit('old-data', [key, value, source, ts]), false
 
-  emitter.filter = function (e, filter) {
-    var source = e[2]
-    var ts = e[3]
-    return (!filter || !filter[source] || filter[source] < ts)
-  }
+  //move this out?
+  //this.store[key] = update
 
-  emitter.histroy = function (filter) {
-    var h = []
-    i.each(emitter.store, function (e) {
-      if(emitter.filter(e, filter))
-        h.push(e)
+  //key, value, timestamp, source
+  this.emit('data', update)
+  this.emit('update', key, value, source, ts)
+  return true
+}
+
+sb.createStream = function () {
+  var self = this
+  //the sources for the remote end.
+  var sources = {}
+  var d = duplex()
+    .on('write', function (data) {
+    //if it's an array, it's an update.
+    //if it's an object, it's a scuttlebut digest.
+      if(Array.isArray(data) && validate(data))
+        return self._update.apply(self, data)
+      if('object' === typeof data && data) {
+        //when the digest is recieved from the other end,
+        //send the histroy.
+        //merge with the current list of sources.
+        sources = data
+        i.each(self.histroy(sources), d.emitData.bind(d)) 
+        this.emit('sync')
+      } 
+    }).on('ended', function () { d.emitEnd() })
+    .on('close', function () {
+      self.removeListener('update', onUpdate)
     })
-    return h
+ 
+  function onUpdate (key, value, source, ts) {
+    if(sources[source] && sources[source] >= ts)
+      return //the other end has already seen this message. 
+    d.emit('data', [key, value, source, ts])
+    //update source
+    sources[source] = ts
   }
+  d.emitData(self.sources)
+  
+  self.on('update', onUpdate)
+  return d
+}
 
-  return emitter
+sb.filter = function (e, filter) {
+  var source = e[2]
+  var ts = e[3]
+  return (!filter || !filter[source] || filter[source] < ts)
+}
+
+sb.histroy = function (filter) {
+  var self = this
+  var h = []
+  i.each(this.store, function (e) {
+    if(self.filter(e, filter))
+      h.push(e)
+  })
+  return h
 }

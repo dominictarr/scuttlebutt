@@ -1,7 +1,9 @@
 
-var gossip = require('..')
+var gossip = require('../model')
 var i = require('iterate')
 var assert = require('assert')
+var timestamp = require('../timestamp')
+var createID = require('../id')
 
 function test(name, test) {
   console.log('#', name)
@@ -11,8 +13,8 @@ function test(name, test) {
 test('updates appear in histroy', function (g) {
   var key = 'key'
   var value = Math.random()
-  var source = gossip.createID()
-  var ts = gossip.timestamp()
+  var source = 'source' //gossip.createID()
+  var ts = timestamp()
 
   
   assert.equal(g._update(key, value, source, ts)
@@ -36,14 +38,15 @@ test('updates appear in histroy', function (g) {
 })
 
 test('can filter histroy with {sources: timestamps}', function (g) {
-  var A = gossip.createID()
-  var B = gossip.createID()
-  var C = gossip.createID()
-  var ts = gossip.timestamp()
+  var A  = createID()
+  var B  = createID()
+  var C  = createID()
+  var ts = timestamp()
+
   g._update('A', 'aaa', A, ts)
   g._update('B', 'bbb', B, ts)
   g._update('C', 'ccc', C, ts)
- 
+
   //filter should only return timestamps that are after
   //the given timestamps.
   var filter = {}
