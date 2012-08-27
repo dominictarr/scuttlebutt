@@ -1,4 +1,4 @@
-var Scuttlebutt = require('./index')
+var Scuttlebutt = require('./')
 var inherits = require('util').inherits
 var each = require('iterate').each
 var u = require('./util')
@@ -23,7 +23,7 @@ emitter.emit = function (event) {
   return this.localUpdate.apply(this, args)
 }
 
-emitter._localUpdate = function (update) {
+emitter.applyUpdate = function (update) {
   var key = update[0]
   this.events = this.events || {}
   this.events[key] = this.events[key] || []

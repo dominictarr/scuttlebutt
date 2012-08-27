@@ -10,18 +10,7 @@ inherits(Model, Scuttlebutt)
 function Model (id) {
   if(!(this instanceof Model)) return new Model(id)
   Scuttlebutt.call(this, id)
-
-  var store = this.store = {}
-  var timestamps = this.timestamps = {}
-  this._localUpdate = function (update) {
-    var key = update[0]
-    //ignore if we already have a more recent value
-    if('undefined' !== typeof store[key] 
-      && store[key][3] > update[3]) 
-      return
-    store[key] = update
-    return true
-  }
+  this.store = {}
 }
 
 var m = Model.prototype
@@ -37,6 +26,16 @@ m.get = function (k) {
 
 //return this history since sources.
 //sources is a hash of { ID: TIMESTAMP }
+
+m.applyUpdate = function (update) {
+  var key = update[0]
+  //ignore if we already have a more recent value
+  if('undefined' !== typeof this.store[key] 
+    && this.store[key][3] > update[3]) 
+    return
+  this.store[key] = update
+  return true
+}
 
 m.histroy = function (sources) {
   var self = this

@@ -55,7 +55,7 @@ var sb = Scuttlebutt.prototype
 
 var emit = EventEmitter.prototype.emit
 
-sb._localUpdate = dutyOfSubclass
+sb.applyUpdate = dutyOfSubclass
 sb.histroy      = dutyOfSubclass
 
 sb.localUpdate = function (key, value) {
@@ -84,7 +84,7 @@ sb._update = function (update) {
   //do nothing if so
   //emit an 'old-data' event because i'll want to track how many
   //unnecessary messages are sent.
-  if(this._localUpdate(update)) {
+  if(this.applyUpdate(update)) {
     emit.call(this, 'data', update)
     emit.apply(this, ['update'].concat(update))
     return true
