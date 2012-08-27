@@ -12,6 +12,10 @@ module.exports = Scuttlebutt
 exports.createID = u.createID
 exports.timestamp = u.timestamp
 
+function dutyOfSubclass() {
+  throw new Error('method must be implemented by subclass')
+}
+
 function validate (data) {
   //must be an 4 element array
   //string, *, string, number
@@ -49,6 +53,11 @@ function Scuttlebutt (id) {
 
 var sb = Scuttlebutt.prototype
 
+var emit = EventEmitter.prototype.emit
+
+sb._localUpdate = dutyOfSubclass
+sb.histroy      = dutyOfSubclass
+
 sb.localUpdate = function (key, value) {
   this._update([key, value, this.id, u.timestamp()])
   return this
@@ -57,18 +66,16 @@ sb.localUpdate = function (key, value) {
 //checks whether this update is valid.
 
 sb._update = function (update) {
-  var key = update[0]
-  var value = update[1]
   var source = update[2]
   var ts = update[3]
 
   //if this message is old for it's source,
   //ignore it. it's out of order.
   //each node must emit it's changes in order!
-
+  
   var latest = this.sources[source]
   if(latest && latest >= ts)
-    return this.emit('old_data', update), false
+    return emit.call(this, 'old_data', update), false
 
   this.sources[source] = ts
 
@@ -78,8 +85,8 @@ sb._update = function (update) {
   //emit an 'old-data' event because i'll want to track how many
   //unnecessary messages are sent.
   if(this._localUpdate(update)) {
-    this.emit('data', update)
-    this.emit('update', key, value, source, ts)
+    emit.call(this, 'data', update)
+    emit.apply(this, ['update'].concat(update))
     return true
   }
 
@@ -103,7 +110,7 @@ sb.createStream = function () {
         //merge with the current list of sources.
         sources = data
         i.each(self.histroy(sources), d.emitData.bind(d))
-        this.emit('sync')
+        d.emit('sync')
       } 
     }).on('ended', function () { d.emitEnd() })
     .on('close', function () {
@@ -114,9 +121,8 @@ sb.createStream = function () {
     if(!u.filter(update, sources))
       return
 
-    //update source _for this stream_
-
-    d.emit('data', update) //[key, value, source, ts])
+    //if I put this after source[source]= ... it breaks tests
+    d.emit('data', update)
 
     //really, this should happen before emitting.
     var source = update[2]
@@ -124,19 +130,8 @@ sb.createStream = function () {
     sources[source] = ts
   }
   d.emitData(self.sources)
-  
   self.on('data', onUpdate)
   return d
 }
 
-
-sb.histroy = function (filter) {
-  var self = this
-  var h = []
-  i.each(this.store, function (e) {
-    if(u.filter(e, filter))
-      h.push(e)
-  })
-  return h
-}
 
