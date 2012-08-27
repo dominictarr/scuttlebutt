@@ -86,7 +86,7 @@ sb._update = function (update) {
   //unnecessary messages are sent.
   if(this.applyUpdate(update)) {
     emit.call(this, 'data', update)
-    emit.apply(this, ['update'].concat(update))
+//    emit.apply(this, ['update'].concat(update))
     return true
   }
 

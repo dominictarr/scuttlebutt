@@ -34,6 +34,7 @@ m.applyUpdate = function (update) {
     && this.store[key][3] > update[3]) 
     return
   this.store[key] = update
+  this.emit.apply(this, ['update'].concat(update))
   return true
 }
 
