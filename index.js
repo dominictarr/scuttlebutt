@@ -2,17 +2,15 @@
 
 var EventEmitter = require('events').EventEmitter
 var i = require('iterate')
-var timestamp = require('./timestamp')
 var duplex = require('duplex')
 var inherits = require('util').inherits
 
-var createID = require('./id')
-
+var u = require('./util')
 exports = 
 module.exports = Scuttlebutt
 
-exports.createID = createID
-exports.timestamp = timestamp
+exports.createID = u.createID
+exports.timestamp = u.timestamp
 
 function validate (data) {
   //must be an 4 element array
@@ -48,24 +46,32 @@ function Scuttlebutt (id) {
   
   emitter.timestamps = {}
   emitter.sources = {}
-  emitter.id = id = id || createID()
+  emitter.id = id = id || u.createID()
 }
 
 var sb = Scuttlebutt.prototype
 
 
 sb.localUpdate = function (key, value) {
-  this._update(key, value, this.id, timestamp())
+  this.__update([key, value, this.id, u.timestamp()])
   return this
 }
 
 //checks whether this update is valid.
 
 sb._update = function (key, value, source, ts) {
+  return this.__update([key, value, source, ts])
+}
+
+sb.__update = function (update) {
+  var key = update[0]
+  var value = update[1]
+  var source = update[2]
+  var ts = update[3]
+
   var emitter = this
-  var cur = this.timestamps[key]
   var latest = this.sources[source]
-  var update = [].slice.call(arguments)
+//  var update = [].slice.call(arguments)
 
   //if this message is older for it's source,
   //ignore it. it's out of order.
@@ -81,15 +87,17 @@ sb._update = function (key, value, source, ts) {
   //do nothing if so
   //emit an 'old-data' event because i'll want to track how many
   //unnecessary messages are sent.
-  if(cur && cur > ts)
-   return this.emit('old-data', [key, value, source, ts]), false
+  var r = this._localUpdate(update)
 
-  //move this out?
-  //this.store[key] = update
+  if(r) {
+    this.emit('data', update)
+    this.emit('update', key, value, source, ts)
+
+  }
 
   //key, value, timestamp, source
-  this.emit('data', update)
-  this.emit('update', key, value, source, ts)
+  //this.emit('data', update)
+  //this.emit('update', key, value, source, ts)
   return true
 }
 
@@ -108,7 +116,7 @@ sb.createStream = function () {
         //send the histroy.
         //merge with the current list of sources.
         sources = data
-        i.each(self.histroy(sources), d.emitData.bind(d)) 
+        i.each(self.histroy(sources), d.emitData.bind(d))
         this.emit('sync')
       } 
     }).on('ended', function () { d.emitEnd() })
@@ -129,17 +137,17 @@ sb.createStream = function () {
   return d
 }
 
-sb.filter = function (e, filter) {
+/*sb.filter = function (e, filter) {
   var source = e[2]
   var ts = e[3]
   return (!filter || !filter[source] || filter[source] < ts)
-}
+}*/
 
 sb.histroy = function (filter) {
   var self = this
   var h = []
   i.each(this.store, function (e) {
-    if(self.filter(e, filter))
+    if(u.filter(e, filter))
       h.push(e)
   })
   return h

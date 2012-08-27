@@ -1,6 +1,7 @@
 var Scuttlebutt = require('./index')
 var inherits = require('util').inherits
 var each = require('iterate').each
+var u = require('./util')
 
 module.exports = Model
 
@@ -11,10 +12,13 @@ function Model (id) {
   Scuttlebutt.call(this, id)
 
   var store = this.store = {}
-
-  this.on('data', function (update) {
-    store[update[0]] = update
-  })
+  var timestamps = this.timestamps = {}
+  this._localUpdate = function (update) {
+    var key = update[0]
+    if('undefined' !== typeof store[key] && store[key][3] > update[3]) return
+    store[key] = update
+    return true
+  }
 }
 
 var m = Model.prototype
@@ -28,11 +32,14 @@ m.get = function (k) {
     return this.store[k][1]
 }
 
-m.histroy = function (filter) {
+//return this history since sources.
+//sources is a hash of { ID: TIMESTAMP }
+
+m.histroy = function (sources) {
   var self = this
   var h = []
   each(this.store, function (e) {
-    if(self.filter(e, filter))
+    if(u.filter(e, sources))
       h.push(e)
   })
   return h

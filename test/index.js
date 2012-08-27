@@ -2,8 +2,8 @@
 var gossip = require('../model')
 var i = require('iterate')
 var assert = require('assert')
-var timestamp = require('../timestamp')
-var createID = require('../id')
+var timestamp = require('../util').timestamp
+var createID = require('../util').createID
 
 function test(name, test) {
   console.log('#', name)
@@ -21,6 +21,7 @@ test('updates appear in histroy', function (g) {
     , true
     , '_update returns true to indicate update applied')
 
+  console.log(g.store)
   assert.equal(g.get(key), value)
 
   assert.deepEqual(g.histroy(), [['key', value, source, ts]])
