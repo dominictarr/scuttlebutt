@@ -12,8 +12,7 @@
     "iterate": "0.0.2",
     "duplex": "~0.1.2"
   },
-  "main": "./model.js",
   "scripts": {
-    "test": "node test/index.js && node test/integrate.js && node test/integrate2.js"
+    "test": "node test/index.js && node test/integrate.js && node test/integrate2.js && node test/events.js"
   }
 }
