@@ -15,7 +15,10 @@ function Model (id) {
   var timestamps = this.timestamps = {}
   this._localUpdate = function (update) {
     var key = update[0]
-    if('undefined' !== typeof store[key] && store[key][3] > update[3]) return
+    //ignore if we already have a more recent value
+    if('undefined' !== typeof store[key] 
+      && store[key][3] > update[3]) 
+      return
     store[key] = update
     return true
   }

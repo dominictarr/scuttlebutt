@@ -35,6 +35,7 @@ function validate (data) {
     || 'number'    !== typeof ts
   ) 
     return error(), false
+
   return true
 }
 
@@ -42,41 +43,30 @@ inherits (Scuttlebutt, EventEmitter)
 
 function Scuttlebutt (id) {
   if(!(this instanceof Scuttlebutt)) return new Scuttlebutt(id)
-  var emitter = this
-  
-  emitter.timestamps = {}
-  emitter.sources = {}
-  emitter.id = id = id || u.createID()
+  this.sources = {}
+  this.id = id = id || u.createID()
 }
 
 var sb = Scuttlebutt.prototype
 
-
 sb.localUpdate = function (key, value) {
-  this.__update([key, value, this.id, u.timestamp()])
+  this._update([key, value, this.id, u.timestamp()])
   return this
 }
 
 //checks whether this update is valid.
 
-sb._update = function (key, value, source, ts) {
-  return this.__update([key, value, source, ts])
-}
-
-sb.__update = function (update) {
+sb._update = function (update) {
   var key = update[0]
   var value = update[1]
   var source = update[2]
   var ts = update[3]
 
-  var emitter = this
-  var latest = this.sources[source]
-//  var update = [].slice.call(arguments)
-
-  //if this message is older for it's source,
+  //if this message is old for it's source,
   //ignore it. it's out of order.
   //each node must emit it's changes in order!
 
+  var latest = this.sources[source]
   if(latest && latest >= ts)
     return this.emit('old_data', update), false
 
@@ -87,18 +77,14 @@ sb.__update = function (update) {
   //do nothing if so
   //emit an 'old-data' event because i'll want to track how many
   //unnecessary messages are sent.
-  var r = this._localUpdate(update)
-
-  if(r) {
+  if(this._localUpdate(update)) {
     this.emit('data', update)
     this.emit('update', key, value, source, ts)
-
+    return true
   }
 
   //key, value, timestamp, source
-  //this.emit('data', update)
-  //this.emit('update', key, value, source, ts)
-  return true
+  return false
 }
 
 sb.createStream = function () {
@@ -110,7 +96,7 @@ sb.createStream = function () {
     //if it's an array, it's an update.
     //if it's an object, it's a scuttlebut digest.
       if(Array.isArray(data) && validate(data))
-        return self._update.apply(self, data)
+        return self._update(data)
       if('object' === typeof data && data) {
         //when the digest is recieved from the other end,
         //send the histroy.
@@ -124,24 +110,25 @@ sb.createStream = function () {
       self.removeListener('update', onUpdate)
     })
  
-  function onUpdate (key, value, source, ts) {
-    if(sources[source] && sources[source] >= ts)
-      return //the other end has already seen this message. 
-    d.emit('data', [key, value, source, ts])
-    //update source
+  function onUpdate (update) { //key, value, source, ts) {
+    if(!u.filter(update, sources))
+      return
+
+    //update source _for this stream_
+
+    d.emit('data', update) //[key, value, source, ts])
+
+    //really, this should happen before emitting.
+    var source = update[2]
+    var ts = update[3]
     sources[source] = ts
   }
   d.emitData(self.sources)
   
-  self.on('update', onUpdate)
+  self.on('data', onUpdate)
   return d
 }
 
-/*sb.filter = function (e, filter) {
-  var source = e[2]
-  var ts = e[3]
-  return (!filter || !filter[source] || filter[source] < ts)
-}*/
 
 sb.histroy = function (filter) {
   var self = this
@@ -152,3 +139,4 @@ sb.histroy = function (filter) {
   })
   return h
 }
+
