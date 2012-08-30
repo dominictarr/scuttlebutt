@@ -34,7 +34,7 @@ emitter.applyUpdate = function (update) {
 }
 
 
-emitter.histroy = function (filter) {
+emitter.history = function (filter) {
   var self = this
   var h = []
   this.events = this.events || {}

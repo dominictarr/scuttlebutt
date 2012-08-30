@@ -10,6 +10,7 @@ exports =
 module.exports = Scuttlebutt
 
 exports.createID = u.createID
+exports.updateIsRecent = u.filter
 exports.timestamp = u.timestamp
 
 function dutyOfSubclass() {
@@ -56,16 +57,16 @@ var sb = Scuttlebutt.prototype
 var emit = EventEmitter.prototype.emit
 
 sb.applyUpdate = dutyOfSubclass
-sb.histroy      = dutyOfSubclass
+sb.history      = dutyOfSubclass
 
 sb.localUpdate = function (key, value) {
-  this._update([key, value, this.id, u.timestamp()])
+  this.write([key, value, this.id, u.timestamp()])
   return this
 }
 
 //checks whether this update is valid.
 
-sb._update = function (update) {
+sb.write = function (update) {
   var source = update[2]
   var ts = update[3]
 
@@ -103,18 +104,18 @@ sb.createStream = function () {
     //if it's an array, it's an update.
     //if it's an object, it's a scuttlebut digest.
       if(Array.isArray(data) && validate(data))
-        return self._update(data)
+        return self.write(data)
       if('object' === typeof data && data) {
         //when the digest is recieved from the other end,
-        //send the histroy.
+        //send the history.
         //merge with the current list of sources.
         sources = data
-        i.each(self.histroy(sources), d.emitData.bind(d))
+        i.each(self.history(sources), d.emitData.bind(d))
         d.emit('sync')
       } 
     }).on('ended', function () { d.emitEnd() })
     .on('close', function () {
-      self.removeListener('update', onUpdate)
+      self.removeListener('data', onUpdate)
     })
  
   function onUpdate (update) { //key, value, source, ts) {
@@ -122,7 +123,7 @@ sb.createStream = function () {
       return
 
     //if I put this after source[source]= ... it breaks tests
-    d.emit('data', update)
+    d.emitData(update)
 
     //really, this should happen before emitting.
     var source = update[2]

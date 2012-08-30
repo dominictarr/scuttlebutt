@@ -38,7 +38,7 @@ m.applyUpdate = function (update) {
   return true
 }
 
-m.histroy = function (sources) {
+m.history = function (sources) {
   var self = this
   var h = []
   each(this.store, function (e) {
