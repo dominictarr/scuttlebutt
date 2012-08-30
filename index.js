@@ -60,13 +60,13 @@ sb.applyUpdate = dutyOfSubclass
 sb.history      = dutyOfSubclass
 
 sb.localUpdate = function (key, value) {
-  this.write([key, value, this.id, u.timestamp()])
+  this._update([key, value, this.id, u.timestamp()])
   return this
 }
 
 //checks whether this update is valid.
 
-sb.write = function (update) {
+sb._update = function (update) {
   var source = update[2]
   var ts = update[3]
 
@@ -86,8 +86,7 @@ sb.write = function (update) {
   //emit an 'old-data' event because i'll want to track how many
   //unnecessary messages are sent.
   if(this.applyUpdate(update)) {
-    emit.call(this, 'data', update)
-//    emit.apply(this, ['update'].concat(update))
+    emit.call(this, '_update', update)
     return true
   }
 
@@ -103,9 +102,11 @@ sb.createStream = function () {
     .on('write', function (data) {
     //if it's an array, it's an update.
     //if it's an object, it's a scuttlebut digest.
-      if(Array.isArray(data) && validate(data))
-        return self.write(data)
-      if('object' === typeof data && data) {
+      if(Array.isArray(data)) {
+        if(validate(data))
+          return self._update(data)
+      }
+      else if('object' === typeof data && data) {
         //when the digest is recieved from the other end,
         //send the history.
         //merge with the current list of sources.
@@ -131,7 +132,7 @@ sb.createStream = function () {
     sources[source] = ts
   }
   d.emitData(self.sources)
-  self.on('data', onUpdate)
+  self.on('_update', onUpdate)
   return d
 }
 

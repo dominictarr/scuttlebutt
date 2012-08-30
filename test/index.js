@@ -17,7 +17,7 @@ test('updates appear in histroy', function (g) {
   var ts = timestamp()
 
   
-  assert.equal(g.write([key, value, source, ts])
+  assert.equal(g._update([key, value, source, ts])
     , true
     , 'write returns true to indicate update applied')
 
@@ -28,7 +28,7 @@ test('updates appear in histroy', function (g) {
  
   var value2 = Math.random()
   //older timestamps are not appled.
-  assert.equal(g.write([key, value2, source, ts - 1])
+  assert.equal(g._update([key, value2, source, ts - 1])
     , false
     , 'write returns false to indicate update did not apply')
   
@@ -44,9 +44,9 @@ test('can filter histroy with {sources: timestamps}', function (g) {
   var C  = createID()
   var ts = timestamp()
 
-  g.write(['A', 'aaa', A, ts])
-  g.write(['B', 'bbb', B, ts])
-  g.write(['C', 'ccc', C, ts])
+  g._update(['A', 'aaa', A, ts])
+  g._update(['B', 'bbb', B, ts])
+  g._update(['C', 'ccc', C, ts])
 
   //filter should only return timestamps that are after
   //the given timestamps.
