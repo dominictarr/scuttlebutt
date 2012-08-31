@@ -6,6 +6,8 @@ var duplex = require('duplex')
 var inherits = require('util').inherits
 var serializer = require('stream-serializer')
 var u = require('./util')
+var ReadableStream = require('readable-stream')
+
 exports = 
 module.exports = Scuttlebutt
 
@@ -98,7 +100,7 @@ sb._update = function (update) {
 sb.createStream = function (opts) {
   var self = this
   //the sources for the remote end.
-  var sources = {}
+  var sources = {}, other
   var d = duplex()
   var outer = serializer(opts && opts.wrapper)(d)
   outer.inner = d
@@ -117,12 +119,12 @@ sb.createStream = function (opts) {
         sources = data
         i.each(self.history(sources), d.emitData.bind(d))
         outer.emit('sync')
-      } 
+      }
     }).on('ended', function () { d.emitEnd() })
     .on('close', function () {
       self.removeListener('data', onUpdate)
     })
- 
+
   function onUpdate (update) { //key, value, source, ts) {
     if(!u.filter(update, sources))
       return
@@ -140,3 +142,67 @@ sb.createStream = function (opts) {
   return outer
 }
 
+//createReadStream -- for persisting.
+
+sb.createReadStream = function (opts) {
+  opts = opts || {}
+
+  //write this.id
+  //then write the histroy.
+  //then, if opts.tail
+  //listen for updates, else emit 'end'
+
+  var out = this.history()
+  out.unshift(this.id)
+
+  var wrapper = ({
+    json: function (e) { return JSON.stringify(e) + '\n' },
+    raw: function (e) { return e }
+  }) [opts.wrapper || 'json']
+
+  var rs = new ReadableStream()
+  rs.read = function () {
+    var data = out.shift()
+    console.log('>>', data)
+    if(!data && !opts.tail)
+      return this.emit('end'), null
+    
+    return wrapper(data)
+  }
+
+  if(opts.tail) {
+    this.on('_update', function (update) {
+      out.push(update)
+      rs.emit('readable')
+    })
+  }
+
+  return rs
+}
+
+sb.createWriteStream = function (opts) {
+  opts = opts || {}
+  var Stream = require('stream')
+  var ws = new Stream()
+  var self = this, first = true
+  ws.writable = true
+  ws.write = function (data) {
+    if(!this.writable) return
+    if('string' === typeof data)
+      return self.id = data, true
+    first = false
+    self.applyUpdate(data)
+    return true
+  }
+  ws.end = function () {
+    this.writable = false
+    self.sync = true
+    self.emit('sync')
+  }
+  ws.destroy = function () {
+    this.writable = false
+    this.emit('close')
+  }
+
+  return serializer(opts.wrapper)(ws)
+}
