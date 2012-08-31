@@ -6,10 +6,13 @@ var g2 = gossip()
 var g3 = gossip()
 
 function sync(g, h) {
-  var s = g.createStream()
-  var r = h.createStream()
+  var s = g.createStream({wrapper: 'raw'})
+  var r = h.createStream({wrapper: 'raw'})
   g.on('old_data', function (d) {
-    console.log('old_data', d)
+    console.log('old_data', d, g.id, h.id)
+  })
+  g.on('update', function () {
+    console.log(g.id, 'key', g.get('key'))
   })
   s.pipe(r).pipe(s)
   s.resume()
@@ -19,9 +22,6 @@ function sync(g, h) {
 sync(g1, g2)
 sync(g2, g3)
 sync(g3, g1)
-
-//I like to have streams that work sync.
-//if you can do that, you know it's tight.
 
 var value = Math.random()
 

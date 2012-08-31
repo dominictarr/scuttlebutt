@@ -4,7 +4,7 @@ var EventEmitter = require('events').EventEmitter
 var i = require('iterate')
 var duplex = require('duplex')
 var inherits = require('util').inherits
-
+var serializer = require('stream-serializer')
 var u = require('./util')
 exports = 
 module.exports = Scuttlebutt
@@ -94,11 +94,14 @@ sb._update = function (update) {
   return false
 }
 
-sb.createStream = function () {
+sb.createStream = function (opts) {
   var self = this
   //the sources for the remote end.
   var sources = {}
   var d = duplex()
+  var outer = serializer(opts && opts.wrapper)(d)
+  outer.inner = d
+  d
     .on('write', function (data) {
     //if it's an array, it's an update.
     //if it's an object, it's a scuttlebut digest.
@@ -112,7 +115,7 @@ sb.createStream = function () {
         //merge with the current list of sources.
         sources = data
         i.each(self.history(sources), d.emitData.bind(d))
-        d.emit('sync')
+        outer.emit('sync')
       } 
     }).on('ended', function () { d.emitEnd() })
     .on('close', function () {
@@ -133,8 +136,6 @@ sb.createStream = function () {
   }
   d.emitData(self.sources)
   self.on('_update', onUpdate)
-  return d
+  return outer
 }
-
-
 
