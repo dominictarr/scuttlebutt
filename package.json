@@ -2,7 +2,7 @@
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
   "name": "scuttlebutt",
   "description": "replicate data via scuttlebutt protocol",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "homepage": "https://github.com/dominictarr/scuttlebutt",
   "repository": {
     "type": "git",
