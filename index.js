@@ -11,6 +11,7 @@ module.exports = Scuttlebutt
 
 exports.createID = u.createID
 exports.updateIsRecent = u.filter
+exports.filter = u.filter
 exports.timestamp = u.timestamp
 
 function dutyOfSubclass() {
