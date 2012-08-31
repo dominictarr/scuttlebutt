@@ -31,7 +31,7 @@ m.applyUpdate = function (update) {
   var key = update[0]
   //ignore if we already have a more recent value
   if('undefined' !== typeof this.store[key] 
-    && this.store[key][3] > update[3]) 
+    && this.store[key][2] > update[2]) 
     return
   this.store[key] = update
   this.emit.apply(this, ['update'].concat(update))

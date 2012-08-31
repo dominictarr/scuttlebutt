@@ -24,7 +24,7 @@ function validate (data) {
   function error () {
     console.error('invalid update', data)
   }
-  var key = data[0], source = data[2], ts = data[3]
+  var key = data[0], ts = data[2], source = data[3]
 
   /*console.log(!Array.isArray(data) 
     , data.length !== 4 
@@ -60,15 +60,15 @@ sb.applyUpdate = dutyOfSubclass
 sb.history      = dutyOfSubclass
 
 sb.localUpdate = function (key, value) {
-  this._update([key, value, this.id, u.timestamp()])
+  this._update([key, value, u.timestamp(), this.id])
   return this
 }
 
 //checks whether this update is valid.
 
 sb._update = function (update) {
-  var source = update[2]
-  var ts = update[3]
+  var ts = update[2]
+  var source = update[3]
 
   //if this message is old for it's source,
   //ignore it. it's out of order.
@@ -127,13 +127,14 @@ sb.createStream = function () {
     d.emitData(update)
 
     //really, this should happen before emitting.
-    var source = update[2]
-    var ts = update[3]
+    var ts = update[2]
+    var source = update[3]
     sources[source] = ts
   }
   d.emitData(self.sources)
   self.on('_update', onUpdate)
   return d
 }
+
 
 

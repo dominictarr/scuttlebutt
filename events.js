@@ -48,7 +48,7 @@ emitter.history = function (filter) {
     //sort my timestamps.
     // so will be A1 B1 A2 B2,
     // not A1 A2 B1 B2
-    return a[3] - b[3]
+    return a[2] - b[2]
   })
 }
 
