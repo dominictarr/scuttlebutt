@@ -44,7 +44,7 @@ inherits (Scuttlebutt, EventEmitter)
 
 function Scuttlebutt (opts) {
   if(!(this instanceof Scuttlebutt)) return new Scuttlebutt(opts)
-  var id = 'string' === typeof opts ? opts : opts.id
+  var id = 'string' === typeof opts ? opts : opts && opts.id
   this.sources = {}
   this.id = id || u.createID()
   if(opts) {
