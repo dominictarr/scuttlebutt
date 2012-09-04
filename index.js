@@ -29,15 +29,8 @@ function validate (data) {
   }
   var key = data[0], ts = data[2], source = data[3]
 
-  /*console.log(!Array.isArray(data) 
-    , data.length !== 4 
-    , 'string'    !== typeof key
-    , 'string'    !== typeof source
-    , 'number'    !== typeof ts
-  )*/
-
   if(  !Array.isArray(data) 
-    || data.length !== 4 
+    || data.length < 4 
     || 'string'    !== typeof key
     || 'string'    !== typeof source
     || 'number'    !== typeof ts
@@ -49,10 +42,15 @@ function validate (data) {
 
 inherits (Scuttlebutt, EventEmitter)
 
-function Scuttlebutt (id) {
-  if(!(this instanceof Scuttlebutt)) return new Scuttlebutt(id)
+function Scuttlebutt (opts) {
+  if(!(this instanceof Scuttlebutt)) return new Scuttlebutt(opts)
+  var id = 'string' === typeof opts ? opts : opts.id
   this.sources = {}
-  this.id = id = id || u.createID()
+  this.id = id || u.createID()
+  if(opts) {
+    this.sign = opts.sign
+    this.verify = opts.verify
+  }
 }
 
 var sb = Scuttlebutt.prototype
@@ -80,6 +78,20 @@ sb._update = function (update) {
   var latest = this.sources[source]
   if(latest && latest >= ts)
     return emit.call(this, 'old_data', update), false
+
+  console.log(source, this.id, this.sign)
+  if(source !== this.id) {
+    if(this.verify && !this.verify(update)) {
+      return EventEmitter.prototype.emit.call(this, 'unverified_data', update)
+    }
+  } else {
+
+    if(this.sign) {
+      //could make this async easily enough.
+      update[4] = this.sign(update)
+    }
+
+  }
 
   this.sources[source] = ts
 

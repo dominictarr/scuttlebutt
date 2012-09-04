@@ -7,9 +7,9 @@ module.exports = Model
 
 inherits(Model, Scuttlebutt)
 
-function Model (id) {
-  if(!(this instanceof Model)) return new Model(id)
-  Scuttlebutt.call(this, id)
+function Model (opts) {
+  if(!(this instanceof Model)) return new Model(opts)
+  Scuttlebutt.call(this, opts)
   this.store = {}
 }
 
