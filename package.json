@@ -14,6 +14,9 @@
     "stream-serializer": "0.0.0",
     "readable-stream" :"~0.0.1"
   },
+  "devDependencies": {
+    "macgyver" : "~1.8.0"
+  },
   "bundleDependencies": ["readable-stream"],
   "scripts": {
     "test": "node test/index.js && node test/integrate.js && node test/integrate2.js && node test/events.js"
