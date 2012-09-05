@@ -3,7 +3,7 @@ var gossip = require('../model')
 var i = require('iterate')
 var assert = require('assert')
 var timestamp = require('../util').timestamp
-var createID = require('../util').createID
+var createId = require('../util').createId
 
 function test(name, test) {
   console.log('#', name)
@@ -39,9 +39,9 @@ test('updates appear in histroy', function (g) {
 })
 
 test('can filter histroy with {sources: timestamps}', function (g) {
-  var A  = createID()
-  var B  = createID()
-  var C  = createID()
+  var A  = createId()
+  var B  = createId()
+  var C  = createId()
   var ts = timestamp()
 
   g._update(['A', 'aaa', ts, A])

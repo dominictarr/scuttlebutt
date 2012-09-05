@@ -16,37 +16,30 @@ function getKey(id) {
   return keys[id]
 }
 
-var sign = mac(function sign (update) {
-  var data = JSON.stringify(update)
-  return crypto.createSign('RSA-SHA1').update(data).sign(PRIVATE, 'base64')
-}).atLeast(1)
+var secure = require('../security')(keys, PRIVATE, PUBLIC)
 
-var verify = mac(function verify (update, cb) {
-  var _update = update.slice()
-  var sig = _update.pop()
-  var id  = update[3]
-  var data = JSON.stringify(_update)
-  var key = getKey(id)
-  if(!key) return false
-  cb(null, crypto.createVerify('RSA-SHA1').update(data).verify(key, sig, 'base64'))
-  
-}).atLeast(1)
+var sign = mac(secure.sign).atLeast(1)
 
+var verify = mac(secure.verify).atLeast(1)
 
 //check the verify and sing methods are correct.
 
 var update = ['id', 'value', Date.now(), 'me']
 update.push(sign(update))
-var verified = verify(update)
-assert.strictEqual(verified, true)
+var isVerified = false
+verify(update, function (err, verified) {
+  assert.strictEqual(verified, true)
+  isVerified = true
+})
+assert.ok(isVerified)
 
 var Emitter = require('../events')
 
-var e = new Emitter({sign: sign, verify: verify, id: 'me'})
-var d = new Emitter({sign: null, verify: verify, id: 'me too'})
+var e = new Emitter({security: secure, id: 'me'})
+var d = new Emitter({security: secure, id: 'me too'})
 
 //emitting from f should be ignored. because the signature is no good.
-var f = new Emitter({sign: Math.random, verify: verify, id: 'other guy'})
+var f = new Emitter({security: {sign: Math.random, verify: verify}, id: 'other guy'})
 
 e.emit('hello', {world: true})
 

@@ -9,8 +9,12 @@ function allow (update, cb) {
   return cb(null, true)
 }
 
-var A = new ReliableEventEmitter({id: 'a', sign: Math.random, verify: allow})
-var B = new ReliableEventEmitter({id: 'b', sign: Math.random, verify: allow})
+var insecure = {
+  sign: Math.random, verify: allow
+}
+
+var A = new ReliableEventEmitter({ id: 'a', security: insecure })
+var B = new ReliableEventEmitter({ id: 'b', security: insecure })
 
 function log (data) {
   console.log('LOG', this.id, data)

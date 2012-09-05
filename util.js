@@ -1,7 +1,7 @@
 var map = require('iterate').map
 
-exports.createID = 
-function createID () {
+exports.createId = 
+function () {
   return map(3, function (i) {
     return Math.random().toString(16).substring(2).toUpperCase()
   }).join('')
