@@ -8,9 +8,9 @@ module.exports = ReliableEventEmitter
 
 inherits(ReliableEventEmitter, Scuttlebutt)
 
-function ReliableEventEmitter (id) {
-  if(!(this instanceof ReliableEventEmitter)) return new ReliableEventEmitter(id)
-  Scuttlebutt.call(this, id)
+function ReliableEventEmitter (opts) {
+  if(!(this instanceof ReliableEventEmitter)) return new ReliableEventEmitter(opts)
+  Scuttlebutt.call(this, opts)
 }
 
 var emit = EventEmitter.prototype.emit

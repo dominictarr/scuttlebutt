@@ -1,9 +1,13 @@
 var crypto = require('crypto')
 var fs = require('fs')
 var assert = require('assert')
+var mac = require('macgyver')()
 
-var PRIVATE = fs.readFileSync(__dirname + '/keys/test.pem')
-var PUBLIC  = fs.readFileSync(__dirname + '/keys/test-cert.pem')
+//var PRIVATE = fs.readFileSync(__dirname + '/keys/test.pem')
+//var PUBLIC  = fs.readFileSync(__dirname + '/keys/test-cert.pem')
+
+var PRIVATE = fs.readFileSync(__dirname + '/keys/test_rsa')
+var PUBLIC  = fs.readFileSync(__dirname + '/keys/test_rsa.pem')
 
 var keys = {
   'me': PUBLIC
@@ -12,30 +16,28 @@ function getKey(id) {
   return keys[id]
 }
 
-function sign (update) {
+var sign = mac(function sign (update) {
   var data = JSON.stringify(update)
-  return crypto.createSign('RSA-SHA256').update(data).sign(PRIVATE, 'base64')
-}
+  return crypto.createSign('RSA-SHA1').update(data).sign(PRIVATE, 'base64')
+}).atLeast(1)
 
-function verify (update) {
+var verify = mac(function verify (update, cb) {
   var _update = update.slice()
   var sig = _update.pop()
   var id  = update[3]
   var data = JSON.stringify(_update)
-  console.log(_update, sig)
   var key = getKey(id)
   if(!key) return false
-  return crypto.createVerify('RSA-SHA256').update(data).verify(key, sig, 'base64')
-}
+  cb(null, crypto.createVerify('RSA-SHA1').update(data).verify(key, sig, 'base64'))
+  
+}).atLeast(1)
+
+
+//check the verify and sing methods are correct.
 
 var update = ['id', 'value', Date.now(), 'me']
-
 update.push(sign(update))
-console.log(update)
-
 var verified = verify(update)
-console.log(verified)
-
 assert.strictEqual(verified, true)
 
 var Emitter = require('../events')
@@ -47,9 +49,6 @@ var d = new Emitter({sign: null, verify: verify, id: 'me too'})
 var f = new Emitter({sign: Math.random, verify: verify, id: 'other guy'})
 
 e.emit('hello', {world: true})
-
-console.log(e)
-console.log(e.history())
 
 var es = e.createStream()
 
@@ -63,11 +62,17 @@ var fs = f.createStream()
 fs.pipe(d.createStream()).pipe(fs)
 
 //should be the next update
-d.on('unverified_data', console.log)
+var n = 0
+d.on('unverified_data', mac(function (update) {
+  assert.equal(update[3], 'other guy')
+  assert.equal(update[1], 'ignore me')
+  assert.equal(update[0], 'hello')
+
+}).once())
 
 f.emit('hello', 'ignore me')
 
-e.on('hello', function () {
-  console.log(e.history())
-})
+e.on('hello', mac(function (value) {
+  assert.deepEqual(value, {world: true})
+}).once())
 

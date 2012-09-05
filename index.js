@@ -21,12 +21,6 @@ function dutyOfSubclass() {
 }
 
 function validate (data) {
-  //must be an 4 element array
-  //string, *, string, number
-  //log a message and ignore if invalid.
-  function error () {
-    console.error('invalid update', data)
-  }
   var key = data[0], ts = data[2], source = data[3]
 
   if(  !Array.isArray(data) 
@@ -35,7 +29,7 @@ function validate (data) {
     || 'string'    !== typeof source
     || 'number'    !== typeof ts
   ) 
-    return error(), false
+    return false
 
   return true
 }
@@ -48,8 +42,8 @@ function Scuttlebutt (opts) {
   this.sources = {}
   this.id = id || u.createID()
   if(opts) {
-    this.sign = opts.sign
-    this.verify = opts.verify
+    this._sign = opts.sign
+    this._verify = opts.verify
   }
 }
 
@@ -70,7 +64,6 @@ sb.localUpdate = function (key, value) {
 sb._update = function (update) {
   var ts = update[2]
   var source = update[3]
-
   //if this message is old for it's source,
   //ignore it. it's out of order.
   //each node must emit it's changes in order!
@@ -79,34 +72,48 @@ sb._update = function (update) {
   if(latest && latest >= ts)
     return emit.call(this, 'old_data', update), false
 
-  console.log(source, this.id, this.sign)
-  if(source !== this.id) {
-    if(this.verify && !this.verify(update)) {
-      return EventEmitter.prototype.emit.call(this, 'unverified_data', update)
-    }
-  } else {
-
-    if(this.sign) {
-      //could make this async easily enough.
-      update[4] = this.sign(update)
-    }
-
-  }
-
   this.sources[source] = ts
 
-  //check if this message is older than
-  //the value we already have.
-  //do nothing if so
-  //emit an 'old-data' event because i'll want to track how many
-  //unnecessary messages are sent.
-  if(this.applyUpdate(update)) {
-    emit.call(this, '_update', update)
-    return true
+  var self = this
+  function didVerification (err, verified) {
+
+    // I'm not sure how what should happen if a async verification
+    // errors. if it's an key not found - that is a verification fail,
+    // not a error. if it's genunie error, really you should queue and 
+    // try again? or replay the message later
+    // -- this should be done my the security plugin though, not scuttlebutt.
+
+    if(err)
+      self.emit('error', err)
+
+    if(!verified)
+      return EventEmitter.prototype.emit.call(self, 'unverified_data', update)
+
+    // check if this message is older than
+    // the value we already have.
+    // do nothing if so
+    // emit an 'old-data' event because i'll want to track how many
+    // unnecessary messages are sent.
+
+    if(self.applyUpdate(update))
+      emit.call(self, '_update', update)
+
   }
 
-  //key, value, timestamp, source
-  return false
+  if(source !== this.id) {
+    if(this._verify)
+      this._verify(update, didVerification)
+    else
+      didVerification(null, true)
+  } else {
+    if(this._sign) {
+      //could make this async easily enough.
+      update[4] = this._sign(update)
+    }
+    didVerification(null, true)
+  }
+
+  return true
 }
 
 sb.createStream = function (opts) {
@@ -175,7 +182,7 @@ sb.createReadStream = function (opts) {
   var rs = new ReadableStream()
   rs.read = function () {
     var data = out.shift()
-    console.log('>>', data)
+
     if(!data && !opts.tail)
       return this.emit('end'), null
     

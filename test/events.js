@@ -1,13 +1,19 @@
 
 var ReliableEventEmitter = require('../events')
 var assert = require('assert')
+var mac = require('macgyver')()
 
-var A = new ReliableEventEmitter()
-var B = new ReliableEventEmitter()
+process.on('exit', mac.validate)
+
+function allow (update, cb) {
+  return cb(null, true)
+}
+
+var A = new ReliableEventEmitter({id: 'a', sign: Math.random, verify: allow})
+var B = new ReliableEventEmitter({id: 'b', sign: Math.random, verify: allow})
 
 function log (data) {
-  console.log(this.id, data)
-
+  console.log('LOG', this.id, data)
 }
 
 function old (data) {
@@ -18,10 +24,10 @@ function old (data) {
 var _a = [], _b = []
 
 A.on('a', log)
-A.on('a', function (data) { _a.push(data) })
+A.on('a', mac(function (data) { _a.push(data) }).times(6))
 
 B.on('a', log)
-B.on('a', function (data) { _b.push(data) })
+B.on('a', mac(function (data) { _b.push(data) }).times(6))
 
 A.emit('a', 'aardvark')
 A.emit('a', 'antelope')

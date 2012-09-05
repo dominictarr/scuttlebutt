@@ -19,7 +19,7 @@ test('updates appear in histroy', function (g) {
   
   assert.equal(g._update([key, value, ts, source])
     , true
-    , 'write returns true to indicate update applied')
+    , 'update returns true to indicate was not old')
 
   console.log(g.store)
   assert.equal(g.get(key), value)
