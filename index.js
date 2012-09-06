@@ -37,17 +37,17 @@ function validate (data) {
 inherits (Scuttlebutt, EventEmitter)
 
 function Scuttlebutt (opts) {
-  var secure = opts && opts.security
 
   if(!(this instanceof Scuttlebutt)) return new Scuttlebutt(opts)
   var id = 'string' === typeof opts ? opts : opts && opts.id
   this.sources = {}
-  if(secure) {
+
+  if(opts.sign && opts.verify) {
     // id should be camelcased "Id" not "ID".
     // as it's a abbreviation, not an acronym.
-    this.id = id || secure.createId()
-    this._sign = secure.sign
-    this._verify = secure.verify
+    this.id      = opts.id || opts.createId()
+    this._sign   = opts.sign
+    this._verify = opts.verify
   } else {
     this.id = id || u.createId()
   }
