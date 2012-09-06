@@ -155,21 +155,13 @@ This is possible even if the verifying node received the message from in interme
 Security is activated by passing in a security object to the contructor of a Scuttlebutt
 subclass. 
 
-Use the included implementation 
+Use the included implementation:
 
 ``` js
-
 var security = require('scuttlebutt/security')(keys, PRIVATE, PUBLIC)
 var Model = require('scuttlebutt/model')
 
 var m = new Model(security)
-
-```js
-var sb = new Model ({
-  sign: function sign (update) { ... },
-  verify: function verify(update, cb) { ... },
-  createId: function createId () { }
-})
 ```
 
 See 
@@ -193,4 +185,17 @@ then the request should be retried until it is available.
 implementation to return a id that is a hash of the public key. This makes it impossible
 for rogue nodes to attempt to associate a old node id with a new public key.
 
+## Generating Keys.
+
+generate an ssh private key, and a PEM encoded public key.
+```
+ssh-keygen -f $KEYNAME -b $LENGTH -N $PASSWORD -q
+ssh-keygen -e -f $KEYNAME.pub -m PEM > $KEYNAME.pem
+
+```
+`$LENGTH` must be `>= 786`, shorter is faster but less secure.
+password may be empty `''`.
+
+`$KEYNAME` is the private key, and `$KEYNAME.pem` is the public key
+to use with Scuttlebutt.
 
