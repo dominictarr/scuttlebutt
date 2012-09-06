@@ -1,0 +1,10 @@
+#! /usr/bin/env bash
+
+[ "x$1" = x ] && { 
+  echo "USAGE ./keygen NAME"; 
+  exit 1; 
+}
+
+ssh-keygen -q -f "$1" -b 768 -N ''
+ssh-keygen -e -f "$1".pub -m PEM > "$1".pem
+
