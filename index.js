@@ -42,7 +42,7 @@ function Scuttlebutt (opts) {
   var id = 'string' === typeof opts ? opts : opts && opts.id
   this.sources = {}
 
-  if(opts.sign && opts.verify) {
+  if(opts && opts.sign && opts.verify) {
     // id should be camelcased "Id" not "ID".
     // as it's a abbreviation, not an acronym.
     this.id      = opts.id || opts.createId()
