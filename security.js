@@ -49,7 +49,7 @@ module.exports = function (keys,
     },
     createId: function () {
       //hash of public key.
-      return crypto.createHash(hashAlg).update(PUBLIC).digest()
+      return crypto.createHash(hashAlg).update(PUBLIC).digest(format)
     }
   }
 }
