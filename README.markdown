@@ -194,17 +194,3 @@ implementation to return a id that is a hash of the public key. This makes it im
 for rogue nodes to attempt to associate a old node id with a new public key.
 
 
-## generating keys.
-
-generate an ssh private key, and a PEM encoded public key.
-```
-ssh-keygen -f $KEYNAME -b $LENGTH -N $PASSWORD -q
-ssh-keygen -e -f $KEYNAME.pub -m PEM > $KEYNAME.pem
-
-```
-`$LENGTH` must be `>= 786`, shorter is faster but less secure.
-password may be empty `''`.
-
-`$KEYNAME` is the private key, and `$KEYNAME.pem` is the public key
-to use with Scuttlebutt.
-
