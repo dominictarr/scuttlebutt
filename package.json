@@ -19,6 +19,6 @@
   },
   "bundleDependencies": ["readable-stream"],
   "scripts": {
-    "test": "node test/index.js && node test/integrate.js && node test/integrate2.js && node test/events.js"
+    "test": "set -e; for test in test/*.js; do node $test; done"
   }
 }
