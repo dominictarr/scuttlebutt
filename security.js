@@ -50,7 +50,8 @@ module.exports = function (keys,
     createId: function () {
       //hash of public key.
       return crypto.createHash(hashAlg).update(PUBLIC).digest(format)
-    }
+    },
+    publicKey: PUBLIC
   }
 }
 
