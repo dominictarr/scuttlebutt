@@ -15,7 +15,8 @@
     "readable-stream": "0.0.2"
   },
   "devDependencies": {
-    "macgyver": "~1.8.0"
+    "macgyver": "~1.8.0",
+    "event-stream": "~3.0"
   },
   "scripts": {
     "test": "set -e; for test in test/*.js; do node $test; done"
