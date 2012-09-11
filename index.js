@@ -149,12 +149,15 @@ sb.createStream = function (opts) {
         i.each(self.history(sources), d.emitData.bind(d))
 
         d.emitData('SYNC')
+        //when we have sent all history
+        outer.emit('sync')
         syncSent = true
-        if(syncRecv) outer.emit('sync')
+        //when we have recieved all histoyr
+        if(syncRecv) outer.emit('synced')
       }
       else if('string' === typeof data && data == 'SYNC') {
         syncRecv = true
-        if(syncSent) outer.emit('sync')
+        if(syncSent) outer.emit('synced')
       }
     }).on('ended', function () {
       //d.emitEnd()
