@@ -1,3 +1,4 @@
+
 //really simple data replication.
 
 var EventEmitter = require('events').EventEmitter
@@ -126,7 +127,9 @@ sb.createStream = function (opts) {
   var self = this
   //the sources for the remote end.
   var sources = {}, other
+  var syncSent = false, syncRecv = false
   var d = duplex()
+  d.name = opts && opts.name
   var outer = serializer(opts && opts.wrapper)(d)
   outer.inner = d
   d
@@ -137,20 +140,37 @@ sb.createStream = function (opts) {
         if(validate(data))
           return self._update(data)
       }
+      //suppose we want to disconnect after we have synced?
       else if('object' === typeof data && data) {
         //when the digest is recieved from the other end,
         //send the history.
         //merge with the current list of sources.
         sources = data
         i.each(self.history(sources), d.emitData.bind(d))
-        outer.emit('sync')
+
+        d.emitData('SYNC')
+        syncSent = true
+        if(syncRecv) outer.emit('sync')
       }
-    }).on('ended', function () { d.emitEnd() })
+      else if('string' === typeof data && data == 'SYNC') {
+        syncRecv = true
+        if(syncSent) outer.emit('sync')
+      }
+    }).on('ended', function () {
+      //d.emitEnd()
+    })
     .on('close', function () {
       self.removeListener('data', onUpdate)
     })
 
-  function onUpdate (update) { //key, value, source, ts) {
+  if(opts && opts.end) {
+    outer.on('sync', function () {
+      process.nextTick(function () {
+        d.emitEnd()
+      })
+    })
+  }
+  function onUpdate (update) { //key, value, source, ts
     if(!u.filter(update, sources))
       return
 
@@ -163,7 +183,9 @@ sb.createStream = function (opts) {
     sources[source] = ts
   }
   d.emitData(self.sources)
-  self.on('_update', onUpdate)
+  outer.on('sync', function () {
+    self.on('_update', onUpdate)
+  })
   return outer
 }
 
