@@ -21,12 +21,12 @@ details here [Security API](#security_api)
 
 ## Usage
 
-subclasses must implement at least `histroy` and `applyUpdate`
+subclasses must implement at least `history` and `applyUpdate`
 
-### Scuttlebutt#histroy(sources)
+### Scuttlebutt#history(sources)
 
 `sources` is a hash of source_ids: timestamps. 
-histroy must return an array of all known events from all sources
+history must return an array of all known events from all sources
 That occur after the given timestamps for each source.
 
 The array MUST be in order by timestamp.
