@@ -48,3 +48,9 @@ m.history = function (sources) {
   return h
 }
 
+m.toJSON = function () {
+  var o = {}
+  for (var k in this.store)
+    o[k] = this.get(k)
+  return o
+}
