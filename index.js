@@ -157,6 +157,7 @@ sb.createStream = function (opts) {
       }
       else if('string' === typeof data && data == 'SYNC') {
         syncRecv = true
+        outer.emit('sync');
         if(syncSent) outer.emit('synced')
       }
     }).on('ended', function () {
