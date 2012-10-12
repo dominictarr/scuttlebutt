@@ -57,6 +57,9 @@ before writing to disk.
 crashes before the histroy has been written then some data will be lost
 /*this is where link to module for that will go*/)
 
+use you may use [kv](https://github.com/dominictarr/kv) to get streams 
+to local storage.
+
 ## API
 
 ### Scuttlebutt#histroy(sources)
