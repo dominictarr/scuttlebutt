@@ -43,14 +43,18 @@ var Model = require('scuttlebutt/model') //or some other subclass...
 var fs = require('fs')
 var m = new Model()
 
-//load from disk.
-
+//stream FROM disk.
 fs.createReadStream(file).pipe(m.createWriteStream())
+
+//stream TO disk.
 m.on('sync', function () {
   m.createReadStream().pipe(fs.createWriteStream(file))
 })
 ```
-
+use `on('sync',...` to wait until the persisted state is in the file
+before writing to disk.
+(make sure you rotate files, else there is a edge case where if the process
+crashes before the histroy has been written then some data will be lost)
 
 ## API
 
