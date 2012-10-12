@@ -10,18 +10,49 @@ read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf
 
 or if you are lazy: http://en.wikipedia.org/wiki/Scuttlebutt (lazyness will get you nowhere, btw)
 
-## Security
-
-Scuttlebutt has an (optional) heavy duty security model using public keys. 
-This enables a high level of security even in peer-to-peer applications.
-You can be sure that a given message is from the node that sent it, 
-even if you did not receive the messasge from them directly.
-
-details here [Security API](#security_api)
 
 ## Usage
 
+Users may implement a subclass of thier own data model.
+two implementations are provided [scuttlebutt/model](#scuttlebutt/model) and
+[scuttlebutt/events](#scuttlebutt/events)
+
+also [crdt](https://github.com/dominictarr/crdt) for a subclass with a more
+high-level data model.
+
+### Replication
+
+Any Scuttlebutt subclass is replicated with createStream.
+
+``` js
+var s = new Scuttlebutt()
+var z = new Scuttlebutt()
+var zs = z.createStream()
+
+zs.pipe(s.createStream()).pipe(zs)
+```
+
 subclasses must implement at least `histroy` and `applyUpdate`
+
+### Persistence
+
+persist by saving to at least one writable stream.
+
+``` js
+var Model = require('scuttlebutt/model') //or some other subclass...
+var fs = require('fs')
+var m = new Model()
+
+//load from disk.
+
+fs.createReadStream(file).pipe(m.createWriteStream())
+m.on('sync', function () {
+  m.createReadStream().pipe(fs.createWriteStream(file))
+})
+```
+
+
+## API
 
 ### Scuttlebutt#histroy(sources)
 
@@ -60,19 +91,7 @@ var s = a.createStream()
 s.pipe(b.createStream()).pipe(s)
 ```
 
-### scuttlebutt subclasses
-
-Any Scuttlebutt subclass is replicated with createStream.
-
-``` js
-var s = new Scuttlebutt()
-var z = new Scuttlebutt()
-var zs = z.createStream()
-
-zs.pipe(s.createStream()).pipe(zs)
-```
-
-### scuttlebutt/ReliableEventEmitter
+### scuttlebutt/events
 
 A Reliable event emmitter. Multiple instances of an emitter
 may be connected to each other and will remember events,
@@ -94,7 +113,7 @@ emit an event. only one argument is permitted.
 
 add an event listener.
 
-### scuttlebutt/Model
+### scuttlebutt/model
 
 A replicateable `Model` object.
 
@@ -134,6 +153,13 @@ When two `Scuttlebutts` are piped together, they both exchange their current lis
 of sources. this is an object of `{source_id: latest_timestamp_for_source_id}`
 after receiving this message, `Scuttlebutt` sends any messages not yet 
 known by the other end. This is the heart of Scuttlebutt Reconciliation.
+
+## Security
+
+Scuttlebutt has an (optional) heavy duty security model using public keys. 
+This enables a high level of security even in peer-to-peer applications.
+You can be sure that a given message is from the node that sent it, 
+even if you did not receive the messasge from them directly.
 
 ## Enabling Security
 
