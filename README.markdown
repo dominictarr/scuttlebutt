@@ -54,7 +54,8 @@ m.on('sync', function () {
 use `on('sync',...` to wait until the persisted state is in the file
 before writing to disk.
 (make sure you rotate files, else there is a edge case where if the process
-crashes before the histroy has been written then some data will be lost)
+crashes before the histroy has been written then some data will be lost
+/*this is where link to module for that will go*/)
 
 ## API
 
