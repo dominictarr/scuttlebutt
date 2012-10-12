@@ -14,8 +14,8 @@ or if you are lazy: http://en.wikipedia.org/wiki/Scuttlebutt (lazyness will get 
 ## Usage
 
 Users may implement a subclass of thier own data model.
-two implementations are provided [scuttlebutt/model](#scuttlebutt/model) and
-[scuttlebutt/events](#scuttlebutt/events)
+two implementations are provided [scuttlebutt/model](#scuttlebuttmodel) and
+[scuttlebutt/events](#scuttlebuttevents)
 
 also [crdt](https://github.com/dominictarr/crdt) for a subclass with a more
 high-level data model.
