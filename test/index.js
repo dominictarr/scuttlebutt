@@ -2,7 +2,8 @@
 var gossip = require('../model')
 var i = require('iterate')
 var assert = require('assert')
-var timestamp = require('../util').timestamp
+var timestamp = require('monotonic-timestamp')
+
 var createId = require('../util').createId
 
 function test(name, test) {

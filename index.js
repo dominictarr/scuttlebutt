@@ -8,6 +8,7 @@ var inherits = require('util').inherits
 var serializer = require('stream-serializer')
 var u = require('./util')
 var ReadableStream = require('readable-stream')
+var timestamp = require('monotonic-timestamp')
 
 exports = 
 module.exports = Scuttlebutt
@@ -15,7 +16,7 @@ module.exports = Scuttlebutt
 exports.createID = u.createID
 exports.updateIsRecent = u.filter
 exports.filter = u.filter
-exports.timestamp = u.timestamp
+exports.timestamp = timestamp
 
 function dutyOfSubclass() {
   throw new Error('method must be implemented by subclass')
@@ -62,7 +63,7 @@ sb.applyUpdate = dutyOfSubclass
 sb.history      = dutyOfSubclass
 
 sb.localUpdate = function (key, value) {
-  this._update([key, value, u.timestamp(), this.id])
+  this._update([key, value, timestamp(), this.id])
   return this
 }
 
