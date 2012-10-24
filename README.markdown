@@ -62,7 +62,7 @@ to local storage.
 
 ## API
 
-### Scuttlebutt#histroy(sources)
+### Scuttlebutt#history(sources)
 
 `sources` is a hash of source_ids: timestamps. 
 history must return an array of all known events from all sources
