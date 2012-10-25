@@ -36,6 +36,8 @@ function validate (data) {
   return true
 }
 
+var emit = EventEmitter.prototype.emit
+
 inherits (Scuttlebutt, EventEmitter)
 
 function Scuttlebutt (opts) {
@@ -92,10 +94,10 @@ sb._update = function (update) {
     // -- this should be done my the security plugin though, not scuttlebutt.
 
     if(err)
-      self.emit('error', err)
+      return emit.call(self, 'error', err)
 
     if(!verified)
-      return EventEmitter.prototype.emit.call(self, 'unverified_data', update)
+      return emit.call(self, 'unverified_data', update)
 
     // check if this message is older than
     // the value we already have.
@@ -123,6 +125,10 @@ sb._update = function (update) {
 
   return true
 }
+
+
+//TODO remove legacy duplex usage
+// emitData() -> _data()
 
 sb.createStream = function (opts) {
   var self = this
@@ -154,6 +160,7 @@ sb.createStream = function (opts) {
         outer.emit('sync')
         syncSent = true
         //when we have recieved all histoyr
+        //emit 'synced' when this stream has synced.
         if(syncRecv) outer.emit('synced')
       }
       else if('string' === typeof data && data == 'SYNC') {
@@ -206,6 +213,8 @@ sb.createReadStream = function (opts) {
   var out = this.history()
   out.unshift(this.id)
 
+  var tail = opts.tail !== false //default to tailing
+
   var wrapper = ({
     json: function (e) { return JSON.stringify(e) + '\n' },
     raw: function (e) { return e }
@@ -215,18 +224,25 @@ sb.createReadStream = function (opts) {
   rs.read = function () {
     var data = out.shift()
 
-    if(!data && !opts.tail)
+    if(!data && !tail)
       return this.emit('end'), null
+    if(!data)
+      return null
     
     return wrapper(data)
   }
 
-  if(opts.tail) {
+  if(tail) {
     this.on('_update', function (update) {
       out.push(update)
       rs.emit('readable')
     })
   }
+
+  this.once('dispose', function () {
+    tail = false //close the stream soon.
+    rs.emit('end')
+  })
 
   return rs
 }
@@ -248,12 +264,17 @@ sb.createWriteStream = function (opts) {
   ws.end = function () {
     this.writable = false
     self.sync = true
-    self.emit('sync')
+    //there are probably bugs in persisting when there are lots of streams.
+    //TODO: figure out what they are! then fix them!
+    emit.call(self, 'sync')
   }
   ws.destroy = function () {
     this.writable = false
     this.emit('close')
   }
-
   return serializer(opts.wrapper)(ws)
+}
+
+sb.dispose = function () {
+  emit.call(this, 'dispose')
 }
