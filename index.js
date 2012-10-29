@@ -152,9 +152,10 @@ sb.createStream = function (opts) {
         //when the digest is recieved from the other end,
         //send the history.
         //merge with the current list of sources.
-        sources = data
+        sources = data.clock
         i.each(self.history(sources), d.emitData.bind(d))
 
+        outer.emit('header', data)
         d.emitData('SYNC')
         //when we have sent all history
         outer.emit('sync')
@@ -193,7 +194,7 @@ sb.createStream = function (opts) {
     var source = update[3]
     sources[source] = ts
   }
-  d.emitData(self.sources)
+  d.emitData({ id : self.id, clock : self.sources })
   outer.on('sync', function () {
     self.on('_update', onUpdate)
   })
