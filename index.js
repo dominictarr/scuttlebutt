@@ -223,7 +223,6 @@ sb.createReadStream = function (opts) {
   var rs = new ReadableStream()
   rs.read = function () {
     var data = out.shift()
-
     if(!data && !tail)
       return this.emit('end'), null
     if(!data)
@@ -232,11 +231,22 @@ sb.createReadStream = function (opts) {
     return wrapper(data)
   }
 
+  function onUpdate (update) {
+    out.push(update)
+    rs.emit('readable')
+  }
+
   if(tail) {
-    this.on('_update', function (update) {
-      out.push(update)
-      rs.emit('readable')
-    })
+    this.on('_update', onUpdate)
+  }
+  var self = this
+  rs.destroy = function () {
+    rs.removeListener('_update', onUpdate)
+    rs.emit('close')
+    //should this emit end?
+    //this is basically close,
+    //does readable-stream actually support this?
+    return this
   }
 
   this.once('dispose', function () {
