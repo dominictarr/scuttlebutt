@@ -2,7 +2,7 @@ var assert = require('assert')
 var mac = require('macgyver')()
 process.on('exit', mac.validate)
 
-var Model = require('scuttlebutt/model')
+var Model = require('../model')
 
 var a = new Model()
 var b = new Model()
