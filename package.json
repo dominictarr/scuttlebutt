@@ -11,7 +11,7 @@
   "dependencies": {
     "iterate": "0.0.2",
     "duplex": "~0.1.3",
-    "stream-serializer": "0.0.1",
+    "stream-serializer": "0.0.2",
     "readable-stream": "~0.0.3",
     "monotonic-timestamp": "0.0.2"
   },
