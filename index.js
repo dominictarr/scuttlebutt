@@ -134,7 +134,9 @@ sb.createStream = function (opts) {
   var self = this
   //the sources for the remote end.
   var sources = {}, other
+
   var syncSent = false, syncRecv = false
+
   var d = duplex()
   d.name = opts && opts.name
   var outer = serializer(opts && opts.wrapper)(d)
@@ -175,7 +177,7 @@ sb.createStream = function (opts) {
       self.removeListener('data', onUpdate)
     })
 
-  if(opts && opts.end) {
+  if(opts && opts.tail === false) {
     outer.on('sync', function () {
       process.nextTick(function () {
         d.emitEnd()
@@ -195,9 +197,8 @@ sb.createStream = function (opts) {
     sources[source] = ts
   }
   d.emitData({ id : self.id, clock : self.sources })
-  outer.on('sync', function () {
-    self.on('_update', onUpdate)
-  })
+  
+  self.on('_update', onUpdate)
   return outer
 }
 
@@ -224,12 +225,20 @@ sb.createReadStream = function (opts) {
   var rs = new ReadableStream()
   rs.read = function () {
     var data = out.shift()
-    if(!data && !tail)
+
+    if(!data && !tail) {
       return this.emit('end'), null
+    }
     if(!data)
       return null
     
     return wrapper(data)
+  }
+
+  rs.end = function () {
+    tail = false
+    rs.emit('readable')    
+    //rs.destroy()
   }
 
   function onUpdate (update) {
@@ -252,7 +261,7 @@ sb.createReadStream = function (opts) {
 
   this.once('dispose', function () {
     tail = false //close the stream soon.
-    rs.emit('end')
+    rs.end()
   })
 
   return rs
@@ -269,7 +278,7 @@ sb.createWriteStream = function (opts) {
     if('string' === typeof data)
       return self.id = data, true
     first = false
-    self.applyUpdate(data)
+    self._update(data)
     return true
   }
   ws.end = function () {
