@@ -171,10 +171,10 @@ sb.createStream = function (opts) {
         if(syncSent) outer.emit('synced')
       }
     }).on('ended', function () {
-      //d.emitEnd()
+      d.emitEnd()
     })
     .on('close', function () {
-      self.removeListener('data', onUpdate)
+      self.removeListener('_update', onUpdate)
     })
 
   if(opts && opts.tail === false) {
@@ -238,7 +238,7 @@ sb.createReadStream = function (opts) {
   rs.end = function () {
     tail = false
     rs.emit('readable')    
-    //rs.destroy()
+    process.nextTick(rs.destroy)
   }
 
   function onUpdate (update) {
@@ -256,7 +256,7 @@ sb.createReadStream = function (opts) {
     //should this emit end?
     //this is basically close,
     //does readable-stream actually support this?
-    return this
+    return rs
   }
 
   this.once('dispose', function () {
@@ -287,6 +287,7 @@ sb.createWriteStream = function (opts) {
     //there are probably bugs in persisting when there are lots of streams.
     //TODO: figure out what they are! then fix them!
     emit.call(self, 'sync')
+    process.nextTick(ws.destroy.bind(ws))
   }
   ws.destroy = function () {
     this.writable = false
