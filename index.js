@@ -196,8 +196,11 @@ sb.createStream = function (opts) {
     var source = update[3]
     sources[source] = ts
   }
-  d.emitData({ id : self.id, clock : self.sources })
-  
+
+  var outgoing = { id : self.id, clock : self.sources }
+  if (opts && opts.meta) outgoing.meta = opts.meta
+  d.emitData(outgoing)
+ 
   self.on('_update', onUpdate)
   return outer
 }
