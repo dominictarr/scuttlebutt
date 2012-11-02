@@ -8,7 +8,7 @@ datastructures for real-time  replication easy.
 This seems like a silly name, but I assure you, this is real science. 
 read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf
 
-or if you are lazy: http://en.wikipedia.org/wiki/Scuttlebutt (lazyness will get you nowhere, btw)
+or if you are lazy: http://en.wikipedia.org/wiki/Scuttlebutt (laziness will get you nowhere, btw)
 
 
 ## Usage
