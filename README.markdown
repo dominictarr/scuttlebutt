@@ -82,6 +82,14 @@ Possibly apply a given update to the subclasses model.
 return true if the update was applied. (see scuttlebutt/model.js
 for an example of a subclass that does not apply every update)
 
+### Scuttlebutt#createStream (opts)
+
+Create a duplex stream to replicate with a remote endpoint.
+
+The stream returned here emits a special `'header'` event with the id of the
+local and remote nodes and the vector clock. You can set metadata on the header
+object using `opts.meta`.
+
 #### Examples
 
 ``` js
