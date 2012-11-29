@@ -158,7 +158,7 @@ then it was a remote update.
 Messages are sent in this format:
 
 ``` js
-[key, value, timestamp, source]
+[change, timestamp, source]
 ```
 
 `source` is the id of the node which originated this message.
