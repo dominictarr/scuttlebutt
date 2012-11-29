@@ -41,7 +41,7 @@ module.exports = function (keys,
     verify: function (update, cb) {
       var _update = update.slice()
       var sig = _update.pop()
-      var id  = update[3]
+      var id  = update[2]
       var data = JSON.stringify(_update)
       var key = keys[id]
       if(!key) return cb(null, false)

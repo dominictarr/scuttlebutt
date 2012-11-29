@@ -23,11 +23,11 @@ function dutyOfSubclass() {
 }
 
 function validate (data) {
-  var key = data[0], ts = data[2], source = data[3]
+  var ts = data[1], source = data[2]
 
   if(  !Array.isArray(data) 
-    || data.length < 4 
-    || 'string'    !== typeof key
+//    || data.length < 4
+//    || 'string'    !== typeof key
     || 'string'    !== typeof source
     || 'number'    !== typeof ts
   ) 
@@ -64,16 +64,16 @@ var emit = EventEmitter.prototype.emit
 sb.applyUpdate = dutyOfSubclass
 sb.history      = dutyOfSubclass
 
-sb.localUpdate = function (key, value) {
-  this._update([key, value, timestamp(), this.id])
+sb.localUpdate = function (trx) {
+  this._update([trx, timestamp(), this.id])
   return this
 }
 
 //checks whether this update is valid.
 
 sb._update = function (update) {
-  var ts = update[2]
-  var source = update[3]
+  var ts = update[1]
+  var source = update[2]
   //if this message is old for it's source,
   //ignore it. it's out of order.
   //each node must emit it's changes in order!
@@ -106,7 +106,7 @@ sb._update = function (update) {
     // unnecessary messages are sent.
 
     if(self.applyUpdate(update))
-      emit.call(self, '_update', update)
+      emit.call(self, '_update', update) //write to stream.
 
   }
 
@@ -118,7 +118,7 @@ sb._update = function (update) {
   } else {
     if(this._sign) {
       //could make this async easily enough.
-      update[4] = this._sign(update)
+      update[3] = this._sign(update)
     }
     didVerification(null, true)
   }
@@ -192,8 +192,8 @@ sb.createStream = function (opts) {
     d.emitData(update)
 
     //really, this should happen before emitting.
-    var ts = update[2]
-    var source = update[3]
+    var ts = update[1]
+    var source = update[2]
     sources[source] = ts
   }
 

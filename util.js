@@ -6,7 +6,7 @@ function () {
 }
 
 exports.filter = function (update, sources) {
-  var ts = update[2]
-  var source = update[3]
+  var ts = update[1]
+  var source = update[2]
   return (!sources || !sources[source] || sources[source] < ts)
 }
