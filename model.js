@@ -16,23 +16,26 @@ function Model (opts) {
 var m = Model.prototype
 
 m.set = function (k, v) {
-  return this.localUpdate(k, v)
+  return this.localUpdate([k, v])
 }
 
 m.get = function (k) {
   if(this.store[k])
-    return this.store[k][1]
+    return this.store[k][0][1]
 }
 
 //return this history since sources.
 //sources is a hash of { ID: TIMESTAMP }
 
 m.applyUpdate = function (update) {
-  var key = update[0]
+  var key = update[0][0]
   //ignore if we already have a more recent value
-  if('undefined' !== typeof this.store[key] 
-    && this.store[key][2] > update[2]) 
-    return
+  if('undefined' !== typeof this.store[key]
+    && this.store[key][1] > update[1])
+    return this.emit('_remove', update)
+
+  if(this.store[key]) this.emit('_remove', this.store[key])
+
   this.store[key] = update
   this.emit.apply(this, ['update'].concat(update))
   return true

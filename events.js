@@ -20,16 +20,16 @@ emitter.emit = function (event) {
   var args = [].slice.call(arguments)
   if(event == 'newListener')
     return emit.apply(this, args)
-  return this.localUpdate.apply(this, args)
+  return this.localUpdate(args)
 }
 
 emitter.applyUpdate = function (update) {
-  var key = update[0]
+  var key = update[0][0]
   this.events = this.events || {}
   this.events[key] = this.events[key] || []
   this.events[key].push(update)
   //emit the event.
-  emit.apply(this, update)
+  emit.apply(this, update[0])
   return true
 }
 
@@ -48,7 +48,7 @@ emitter.history = function (filter) {
     //sort my timestamps.
     // so will be A1 B1 A2 B2,
     // not A1 A2 B1 B2
-    return a[2] - b[2]
+    return a[1] - b[1]
   })
 }
 
