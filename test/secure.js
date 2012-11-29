@@ -29,7 +29,7 @@ var verify = secure.verify = mac(secure.verify).atLeast(1)
 
 //check the verify and sing methods are correct.
 
-var update = ['id', 'value', Date.now(), me_id]
+var update = [['id', 'value'], Date.now(), me_id]
 update.push(sign(update))
 var isVerified = false
 verify(update, function (err, verified) {
@@ -55,10 +55,10 @@ var es = e.createStream()
 es.pipe(d.createStream()).pipe(es)
 
 //this should be the signed update.
-d.on('hello', mac(function (message, timestamp, id, sign) {
-  console.log(message, timestamp, id, sign)
+d.on('hello', mac(function (message) {
+  console.log(message)
   assert.deepEqual(message, {world: true})
-  assert.equal(id, ids.e)
+//  assert.equal(id, ids.e)
 }).once())
 
 var fs = f.createStream()
@@ -68,9 +68,9 @@ fs.pipe(d.createStream()).pipe(fs)
 //should be the next update
 var n = 0
 d.on('unverified_data', mac(function (update) {
-  assert.equal(update[3], ids.f)
-  assert.equal(update[1], 'ignore me')
-  assert.equal(update[0], 'hello')
+  assert.equal(update[2], ids.f)
+  assert.equal(update[0][1], 'ignore me')
+  assert.equal(update[0][0], 'hello')
 }).once())
 
 f.emit('hello', 'ignore me')
