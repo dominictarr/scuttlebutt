@@ -1,12 +1,9 @@
-//really simple data replication.
-
 var EventEmitter = require('events').EventEmitter
 var i = require('iterate')
 var duplex = require('duplex')
 var inherits = require('util').inherits
 var serializer = require('stream-serializer')
 var u = require('./util')
-var ReadableStream = require('readable-stream')
 var timestamp = require('monotonic-timestamp')
 
 exports = 
@@ -43,8 +40,6 @@ function Scuttlebutt (opts) {
   this.sources = {}
 
   if(opts && opts.sign && opts.verify) {
-    // id should be camelcased "Id" not "ID".
-    // as it's a abbreviation, not an acronym.
     this.id      = opts.id || opts.createId()
     this._sign   = opts.sign
     this._verify = opts.verify
@@ -64,8 +59,6 @@ sb.localUpdate = function (trx) {
   this._update([trx, timestamp(), this.id])
   return this
 }
-
-//checks whether this update is valid.
 
 sb._update = function (update) {
   var ts = update[1]
@@ -98,7 +91,7 @@ sb._update = function (update) {
     // check if this message is older than
     // the value we already have.
     // do nothing if so
-    // emit an 'old-data' event because i'll want to track how many
+    // emit an 'old_data' event because i'll want to track how many
     // unnecessary messages are sent.
 
     if(self.applyUpdate(update))
@@ -121,10 +114,6 @@ sb._update = function (update) {
 
   return true
 }
-
-
-//TODO remove legacy duplex usage
-// emitData() -> _data()
 
 sb.createStream = function (opts) {
   var self = this
@@ -150,7 +139,6 @@ sb.createStream = function (opts) {
     //merge with the current list of sources.
     sources = data.clock
     i.each(self.history(sources), d._data.bind(d))
-    console.log('start', self.history(sources))
     
     outer.emit('header', data)
     d._data('SYNC')
@@ -165,7 +153,7 @@ sb.createStream = function (opts) {
 
   d
     .on('_data', function (data) {
-    //if it's an array, it's an update.
+      //if it's an array, it's an update.
       if(Array.isArray(data)) {
         if(validate(data))
           return self._update(data)
@@ -195,7 +183,6 @@ sb.createStream = function (opts) {
     if(!u.filter(update, sources))
       return
 
-    //if I put this after source[source]= ... it breaks tests
     d._data(update)
 
     //really, this should happen before emitting.
