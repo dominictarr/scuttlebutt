@@ -2,6 +2,8 @@
 
 <img src=https://secure.travis-ci.org/dominictarr/scuttlebutt.png?branch=master>
 
+[![browser support](http://ci.testling.com/dominictarr/scuttlebutt.png)](http://ci.testling.com/dominictarr/scuttlebutt)
+
 A base class that makes implementing 
 datastructures for real-time  replication easy.
 
