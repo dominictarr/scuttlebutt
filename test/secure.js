@@ -1,6 +1,6 @@
+require('tape')('secure', function (t) {
 var crypto = require('crypto')
 var fs = require('fs')
-var assert = require('assert')
 var mac = require('macgyver')()
 
 var PRIVATE = fs.readFileSync(__dirname + '/keys/test1')
@@ -33,10 +33,10 @@ var update = [['id', 'value'], Date.now(), me_id]
 update.push(sign(update))
 var isVerified = false
 verify(update, function (err, verified) {
-  assert.strictEqual(verified, true)
+  t.strictEqual(verified, true)
   isVerified = true
 })
-assert.ok(isVerified)
+t.ok(isVerified)
 
 var Emitter = require('../events')
 
@@ -57,8 +57,9 @@ es.pipe(d.createStream()).pipe(es)
 //this should be the signed update.
 d.on('hello', mac(function (message) {
   console.log(message)
-  assert.deepEqual(message, {world: true})
+  t.deepEqual(message, {world: true})
 //  assert.equal(id, ids.e)
+  t.end()
 }).once())
 
 var fs = f.createStream()
@@ -68,10 +69,10 @@ fs.pipe(d.createStream()).pipe(fs)
 //should be the next update
 var n = 0
 d.on('unverified_data', mac(function (update) {
-  assert.equal(update[2], ids.f)
-  assert.equal(update[0][1], 'ignore me')
-  assert.equal(update[0][0], 'hello')
+  t.equal(update[2], ids.f)
+  t.equal(update[0][1], 'ignore me')
+  t.equal(update[0][0], 'hello')
 }).once())
 
 f.emit('hello', 'ignore me')
-
+})

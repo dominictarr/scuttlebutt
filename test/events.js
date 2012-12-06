@@ -1,6 +1,5 @@
-
+require('tape')('events', function (t) {
 var ReliableEventEmitter = require('../events')
-var assert = require('assert')
 var mac = require('macgyver')()
 
 process.on('exit', mac.validate)
@@ -42,6 +41,11 @@ var s
 (s = A.createStream()).pipe(B.createStream()).pipe(s)
 
 process.nextTick(function () {
-  assert.deepEqual(_a.sort(), _b.sort())
+  t.deepEqual(_a.sort(), _b.sort())
   console.log(_a.sort())
+  t.end()
 })
+
+})
+
+

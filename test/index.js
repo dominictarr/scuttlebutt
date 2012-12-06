@@ -1,45 +1,50 @@
+var tape = require('tape')
 
 var gossip = require('../model')
 var i = require('iterate')
-var assert = require('assert')
+
 var timestamp = require('monotonic-timestamp')
 
 var createId = require('../util').createId
 
 function test(name, test) {
   console.log('#', name)
-  test(gossip())
+  tape(name, function (t) {
+    test(gossip(), t)
+  })
 }
 
-test('updates appear in histroy', function (g) {
+test('updates appear in histroy', function (g, t) {
   var key = 'key'
   var value = Math.random()
   var source = 'source' //gossip.createID()
   var ts = timestamp()
 
   
-  assert.equal(g._update([[key, value], ts, source])
+  t.equal(g._update([[key, value], ts, source])
     , true
     , 'update returns true to indicate was not old')
 
   console.log(g.store)
-  assert.equal(g.get(key), value)
+  t.equal(g.get(key), value)
 
-  assert.deepEqual(g.history(), [[['key', value], ts, source]])
+  t.deepEqual(g.history(), [[['key', value], ts, source]])
  
   var value2 = Math.random()
   //older timestamps are not appled.
-  assert.equal(g._update([[key, value2], ts - 1, source])
+  t.equal(g._update([[key, value2], ts - 1, source])
     , false
     , 'write returns false to indicate update did not apply')
   
   //the second update was older, so must not be in the history
-  assert.deepEqual(g.history(), [[['key', value], ts, source]])
+  t.deepEqual(g.history(), [[['key', value], ts, source]])
 
-  assert.equal(g.get(key), value)
+  t.equal(g.get(key), value)
+
+  t.end()
 })
 
-test('can filter histroy with {sources: timestamps}', function (g) {
+test('can filter histroy with {sources: timestamps}', function (g, t) {
   var A  = createId()
   var B  = createId()
   var C  = createId()
@@ -56,23 +61,24 @@ test('can filter histroy with {sources: timestamps}', function (g) {
   filter[B] = ts
   filter[C] = ts
 
-  assert.deepEqual(
+  t.deepEqual(
     g.history(filter)
     , [])
 
   filter[B] = ts - 1
 
-   assert.deepEqual(
+   t.deepEqual(
     g.history(filter)
     , [[['B', 'bbb'], ts, B]])
 
   //if an item is not available, it
  
   filter[C] = null
-   assert.deepEqual(
+   t.deepEqual(
     g.history(filter)
     , [ [['B', 'bbb'], ts, B]
       , [['C', 'ccc'], ts, C]])
   
+  t.end()
 })
 

@@ -1,5 +1,5 @@
+require('tape')('integrate 2', function (t) {
 var gossip = require('../model')
-var assert = require('assert')
 
 var g1 = gossip()
 var g2 = gossip()
@@ -27,6 +27,8 @@ var value = Math.random()
 
 g1.set('key', value)
 
-assert.equal(g3.get('key'), g1.get('key'))
-assert.equal(g2.get('key'), g1.get('key'))
+t.equal(g3.get('key'), g1.get('key'))
+t.equal(g2.get('key'), g1.get('key'))
 
+t.end()
+})

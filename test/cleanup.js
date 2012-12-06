@@ -1,6 +1,5 @@
-
+require('tape')('cleanup', function (t) {
 var Events = require('../events')
-var assert = require('assert')
 var e = new Events()
 
 //test that _update listeners are cleaned up!
@@ -14,8 +13,14 @@ function cs () {
     process.nextTick(function () {
       s.end()
       cs()
-      assert(e.listeners('_update').length <= 2)
+      t.ok(e.listeners('_update').length <= 2)
     })
+  else
+    t.end()
+
 }
 
 cs()
+
+
+})

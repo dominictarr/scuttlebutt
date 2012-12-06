@@ -1,7 +1,7 @@
+require('tape')('persist', function (t) {
 //need a stream that ends after it has syncronized two scuttlebutts.
 
 var EE = require('../events')
-var assert = require('assert')
 var es = require('event-stream')
 var mac = require('macgyver')()
 
@@ -16,8 +16,13 @@ a.createReadStream(/*{wrapper: 'raw'}*/)
   .pipe(es.log('>>'))
   .on('end', mac('end').once())
   .pipe(es.writeArray(function (_, ary) {
-    console.log('ARY', ary)
     es.from(ary).pipe(b.createWriteStream(/*{wrapper: 'raw'}*/))
+    .on('close', mac(function () {
+      t.deepEqual(a.history(), b.history())
+      t.end()
+
+      console.log('ARY', b.history())
+    }).once())
   }))
 
 b.on('_update', mac('_update').times(3))
@@ -31,5 +36,4 @@ while(l--) {
 
 a.dispose() //end all streams
 
-
-
+})

@@ -1,4 +1,4 @@
-
+require('tape')('dispose', function (t) {
 /*
 we need to be able to stream the state of the model to disk,
 and then call doc.dispose()
@@ -6,7 +6,7 @@ and end the stream.
 */
 
 var EE = require('../events')
-var assert = require('assert')
+
 var es = require('event-stream')
 var mac = require('macgyver')()
 process.on('exit', mac.validate)
@@ -36,5 +36,8 @@ emitter.on('dispose', function () {
 process.nextTick(function () {
   console.log('dispose')
   emitter.dispose()
-  assert(ended, 'dispose must trigger end on all streams')
+  t.ok(ended, 'dispose must trigger end on all streams')
+  t.end()
+})
+
 })

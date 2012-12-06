@@ -1,3 +1,4 @@
+require('tape')('sync', function (t) {
 //need a stream that ends after it has syncronized two scuttlebutts.
 
 var EE = require('../events')
@@ -15,13 +16,13 @@ var bs = b.createStream({end: true, wrapper: 'json', name: 'b'})
 as.on('synced', mac(function () {
   console.log('A SYNC!')
   synced = true
-  assert.deepEqual(a.history(), b.history())
+  t.deepEqual(a.history(), b.history())
  }).once())
 
 bs.on('synced', mac(function () {
   console.log('B SYNC!')
   next(function () {
-    assert.deepEqual(a.history(), b.history())
+    t.deepEqual(a.history(), b.history())
   })
  }).once())
 
@@ -42,7 +43,7 @@ b.emit('event', 4)
 b.emit('event', 5)
 b.emit('event', 6)
 
-assert.equal(synced, false)
+t.equal(synced, false)
 
 as.pipe(es.log('AB>')).pipe(bs).pipe(es.log('BA>')).pipe(as)
 
@@ -53,6 +54,8 @@ next(function () {
   console.log(a.history())
   console.log(b.history())
 
-  assert.deepEqual(a.history(), b.history())
+  t.deepEqual(a.history(), b.history())
+  t.end()
+})
 
 })
