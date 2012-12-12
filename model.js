@@ -38,6 +38,9 @@ m.applyUpdate = function (update) {
 
   this.store[key] = update
   this.emit.apply(this, ['update'].concat(update))
+  this.emit('change', key, update[0][1])
+  this.emit('change:'+key, update[0][1])
+
   return true
 }
 
