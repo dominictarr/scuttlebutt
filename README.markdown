@@ -1,6 +1,6 @@
 # scuttlebutt
 
-<img src=https://secure.travis-ci.org/dominictarr/scuttlebutt.png?branch=master>
+[![travis](https://secure.travis-ci.org/dominictarr/scuttlebutt.png?branch=master)](https://travis-ci.org/dominictarr/scuttlebutt)
 
 [![browser support](http://ci.testling.com/dominictarr/scuttlebutt.png)](http://ci.testling.com/dominictarr/scuttlebutt)
 
