@@ -38,6 +38,7 @@ function Scuttlebutt (opts) {
   if(!(this instanceof Scuttlebutt)) return new Scuttlebutt(opts)
   var id = 'string' === typeof opts ? opts : opts && opts.id
   this.sources = {}
+  this.setMaxListeners(Number.MAX_VALUE)
 
   if(opts && opts.sign && opts.verify) {
     this.id      = opts.id || opts.createId()
