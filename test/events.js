@@ -1,8 +1,6 @@
 require('tape')('events', function (t) {
 var ReliableEventEmitter = require('../events')
-var mac = require('macgyver')()
-
-process.on('exit', mac.validate)
+var mac = require('macgyver')().autoValidate()
 
 function allow (update, cb) {
   return cb(null, true)

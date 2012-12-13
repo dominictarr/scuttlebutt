@@ -1,7 +1,6 @@
 require('tape')('header', function (t) {
 
-var mac = require('macgyver')()
-process.on('exit', mac.validate)
+var mac = require('macgyver')().autoValidate()
 
 var Model = require('../model')
 

@@ -8,8 +8,7 @@ and end the stream.
 var EE = require('../events')
 
 var es = require('event-stream')
-var mac = require('macgyver')()
-process.on('exit', mac.validate)
+var mac = require('macgyver')().autoValidate()
 
 var emitter = new EE()
 var ended = false
