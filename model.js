@@ -16,7 +16,8 @@ function Model (opts) {
 var m = Model.prototype
 
 m.set = function (k, v) {
-  return this.localUpdate([k, v])
+  this.localUpdate([k, v])
+  return this
 }
 
 m.get = function (k) {
