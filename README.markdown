@@ -5,7 +5,7 @@
 [![browser support](http://ci.testling.com/dominictarr/scuttlebutt.png)](http://ci.testling.com/dominictarr/scuttlebutt)
 
 A base class that makes implementing 
-datastructures for real-time  replication easy.
+data structures for real-time  replication easy.
 
 This seems like a silly name, but I assure you, this is real science. 
 read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf
