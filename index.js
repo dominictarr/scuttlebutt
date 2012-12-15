@@ -144,11 +144,11 @@ sb.createStream = function (opts) {
     outer.emit('header', data)
     d._data('SYNC')
     //when we have sent all history
-    outer.emit('sync')
+    outer.emit('syncSent')
     syncSent = true
     //when we have recieved all histoyr
     //emit 'synced' when this stream has synced.
-    if(syncRecv) outer.emit('synced')
+    if(syncRecv) outer.emit('sync'), outer.emit('synced')
     if(!tail) d._end()
   }
 
@@ -164,7 +164,8 @@ sb.createStream = function (opts) {
         start(data)
       else if('string' === typeof data && data == 'SYNC') {
         syncRecv = true
-        if(syncSent) outer.emit('synced')
+        outer.emit('syncRecieved')
+        if(syncSent) outer.emit('sync'), outer.emit('synced')
       }
     }).on('_end', function () {
       d._end()
