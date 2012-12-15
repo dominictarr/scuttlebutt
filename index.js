@@ -132,6 +132,9 @@ sb.createStream = function (opts) {
   d.writable = opts.writable !== false
   d.readable = opts.readable !== false
 
+  syncRecv   = !d.writable
+  syncSent   = !d.readable
+
   var tail = opts.tail !== false //default to tail=true
 
   function start (data) {
