@@ -13,13 +13,13 @@ var synced = false
 var as = a.createStream({end: true, wrapper: 'json', name: 'a'})
 var bs = b.createStream({end: true, wrapper: 'json', name: 'b'})
 
-as.on('synced', mac(function () {
+as.on('sync', mac(function () {
   console.log('A SYNC!')
   synced = true
   t.deepEqual(a.history(), b.history())
  }).once())
 
-bs.on('synced', mac(function () {
+bs.on('sync', mac(function () {
   console.log('B SYNC!')
   next(function () {
     t.deepEqual(a.history(), b.history())
