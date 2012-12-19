@@ -1,17 +1,15 @@
 # scuttlebutt
 
+A base-class for real-time replication.
+
 [![travis](https://secure.travis-ci.org/dominictarr/scuttlebutt.png?branch=master)](https://travis-ci.org/dominictarr/scuttlebutt)
 
 [![browser support](http://ci.testling.com/dominictarr/scuttlebutt.png)](http://ci.testling.com/dominictarr/scuttlebutt)
-
-A base class that makes implementing 
-data structures for real-time  replication easy.
 
 This seems like a silly name, but I assure you, this is real science. 
 read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf
 
 or if you are lazy: http://en.wikipedia.org/wiki/Scuttlebutt (laziness will get you nowhere, btw)
-
 
 ## Usage
 
@@ -19,8 +17,12 @@ Users may implement a subclass of thier own data model.
 two implementations are provided [scuttlebutt/model](#scuttlebuttmodel) and
 [scuttlebutt/events](#scuttlebuttevents)
 
-also [crdt](https://github.com/dominictarr/crdt) for a subclass with a more
-high-level data model.
+subclasses:
+
+  * [crdt](https://github.com/dominictarr/crdt) higher-level, with sets and sequences.
+  * [r-array](https://github.com/dominictarr/r-array) Replicatable Array.
+  * [r-edit](https://github.com/dominictarr/r-edit) Collaborative Text Editing.
+  * [append-only]https://github.com/Raynos/append-only) news feed.
 
 ### Replication
 
