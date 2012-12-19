@@ -13,8 +13,9 @@ or if you are lazy: http://en.wikipedia.org/wiki/Scuttlebutt (laziness will get 
 
 ## Usage
 
-Users may implement a subclass of thier own data model.
-two implementations are provided [scuttlebutt/model](#scuttlebuttmodel) and
+Scuttlebutt is intended to be subclassed into a variety of data-models.
+
+Two implementations are provided as examples [scuttlebutt/model](#scuttlebuttmodel) and
 [scuttlebutt/events](#scuttlebuttevents)
 
 subclasses:
@@ -22,7 +23,8 @@ subclasses:
   * [crdt](https://github.com/dominictarr/crdt) higher-level, with sets and sequences.
   * [r-array](https://github.com/dominictarr/r-array) Replicatable Array.
   * [r-edit](https://github.com/dominictarr/r-edit) Collaborative Text Editing.
-  * [append-only]https://github.com/Raynos/append-only) news feed.
+  * [append-only](https://github.com/Raynos/append-only) news feed.
+  * [scuttlebucket](https://github.com/dominictarr/scuttlebucket) combine multiple scuttlebutts into one.
 
 ### Replication
 
