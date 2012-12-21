@@ -7,9 +7,9 @@ A base-class for real-time replication.
 [![browser support](http://ci.testling.com/dominictarr/scuttlebutt.png)](http://ci.testling.com/dominictarr/scuttlebutt)
 
 This seems like a silly name, but I assure you, this is real science. 
-read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf
+Read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf 
 
-or if you are lazy: http://en.wikipedia.org/wiki/Scuttlebutt (laziness will get you nowhere, btw)
+Or, if you're lazy: http://en.wikipedia.org/wiki/Scuttlebutt (laziness will get you nowhere, btw)
 
 ## Usage
 
@@ -38,11 +38,11 @@ var zs = z.createStream()
 zs.pipe(s.createStream()).pipe(zs)
 ```
 
-subclasses must implement at least `history` and `applyUpdate`
+Subclasses must implement at least `history` and `applyUpdate`.
 
 ### Persistence
 
-persist by saving to at least one writable stream.
+Persist by saving to at least one writable stream.
 
 ``` js
 var Model = require('scuttlebutt/model') //or some other subclass...
@@ -57,13 +57,13 @@ m.on('sync', function () {
   m.createReadStream().pipe(fs.createWriteStream(file))
 })
 ```
-use `on('sync',...` to wait until the persisted state is in the file
+Use `on('sync',...` to wait until the persisted state is in the file
 before writing to disk.
-(make sure you rotate files, else there is a edge case where if the process
-crashes before the histroy has been written then some data will be lost
+(Make sure you rotate files, else there is an edge case where if the process
+crashes before the history has been written some data will be lost
 /*this is where link to module for that will go*/)
 
-use you may use [kv](https://github.com/dominictarr/kv) to get streams 
+You may use [kv](https://github.com/dominictarr/kv) to get streams 
 to local storage.
 
 ## API
@@ -71,7 +71,7 @@ to local storage.
 ### Scuttlebutt#history(sources)
 
 `sources` is a hash of source_ids: timestamps. 
-history must return an array of all known events from all sources
+History must return an array of all known events from all sources
 That occur after the given timestamps for each source.
 
 The array MUST be in order by timestamp.
@@ -85,8 +85,8 @@ The array MUST be in order by timestamp.
 ### Scuttlebutt#applyUpdate (update)
 
 Possibly apply a given update to the subclasses model.
-return true if the update was applied. (see scuttlebutt/model.js
-for an example of a subclass that does not apply every update)
+Return 'true' if the update was applied. (See scuttlebutt/model.js
+for an example of a subclass that does not apply every update.)
 
 ### Scuttlebutt#createStream (opts)
 
@@ -115,7 +115,7 @@ s.pipe(b.createStream()).pipe(s)
 
 ### scuttlebutt/events
 
-A Reliable event emmitter. Multiple instances of an emitter
+A reliable event emmitter. Multiple instances of an emitter
 may be connected to each other and will remember events,
 so that they may be resent after a disconnection or crash.
 
@@ -129,11 +129,11 @@ var emitter = new Emitter()
 
 #### emit (event, data)
 
-emit an event. only one argument is permitted.
+Emit an event. Only one argument is permitted.
 
 #### on (event, listener)
 
-add an event listener.
+Add an event listener.
 
 ### scuttlebutt/model
 
@@ -147,11 +147,11 @@ var model = new Model()
 
 #### get (key)
 
-Get a property
+Get a property.
 
 #### set (key, value)
 
-Set a property
+Set a property.
 
 #### on('update', function (key, value, source))
 
@@ -168,12 +168,12 @@ Messages are sent in this format:
 ```
 
 `source` is the id of the node which originated this message.
-timestamp is the time when the message was created. 
-this message is created using `Scuttlebutt#localUpdate(key, value)`
+Timestamp is the time when the message was created. 
+This message is created using `Scuttlebutt#localUpdate(key, value)`.
 
 When two `Scuttlebutts` are piped together, they both exchange their current list
-of sources. this is an object of `{source_id: latest_timestamp_for_source_id}`
-after receiving this message, `Scuttlebutt` sends any messages not yet 
+of sources. This is an object of `{source_id: latest_timestamp_for_source_id}`
+After receiving this message, `Scuttlebutt` sends any messages not yet 
 known by the other end. This is the heart of Scuttlebutt Reconciliation.
 
 ## Security
@@ -195,12 +195,12 @@ var m = new Model(security(keys, PRIVATE, PUBLIC))
 ## Security API
 
 When security is enabled, each scuttlebutt message is signed with a private key.
-It is then possible for any Scuttlebutt instance to be confidant about the
+It is then possible for any scuttlebutt instance to be confidant about the
 authenticity of the message by verifying it against the source's public key.
 
-This is possible even if the verifying node received the message from in intermediate node.
+This is possible even if the verifying node received the message from an intermediate node.
 
-Security is activated by passing in a security object to the contructor of a Scuttlebutt
+Security is activated by passing in a security object to the contructor of a scuttlebutt
 subclass. 
 
 Use the included implementation:
@@ -220,7 +220,7 @@ for a simple example implementation.
 `verify(update, cb)` should verify the update, using public key associated with the
 `source` field in the update. Verification may be asyncronous. `verify` must callback
 `cb(err, boolean)` where boolean indicates whether or not the signature is valid.
-only callback in error in the most extreme circumstances. 
+Only callback in error in the most extreme circumstances. 
 If there was no known key for the required source then that should be treated as a 
 verification failure. If it is not possible to reach the key database (or whatever)
 then the request should be retried until it is available. 
@@ -235,7 +235,7 @@ for rogue nodes to attempt to associate a old node id with a new public key.
 
 ## Generating Keys.
 
-generate an ssh private key, and a PEM encoded public key.
+Generate an ssh private key, and a PEM encoded public key.
 ```
 ssh-keygen -f $KEYNAME -b $LENGTH -N $PASSWORD -q
 ssh-keygen -e -f $KEYNAME.pub -m PEM > $KEYNAME.pem
