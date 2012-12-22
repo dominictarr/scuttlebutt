@@ -15,7 +15,7 @@
     "monotonic-timestamp": "0.0.2"
   },
   "devDependencies": {
-    "macgyver": "~1.10.0",
+    "macgyver": "~1.10.1",
     "event-stream": "~3.0.10",
     "tape": "0.0.5"
   },
