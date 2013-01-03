@@ -25,6 +25,7 @@ subclasses:
   * [r-edit](https://github.com/dominictarr/r-edit) Collaborative Text Editing.
   * [append-only](https://github.com/Raynos/append-only) news feed.
   * [scuttlebucket](https://github.com/dominictarr/scuttlebucket) combine multiple scuttlebutts into one.
+  * [expiry-model](https://github.com/Raynos/expiry-model) memory capped model with expiring keys.
 
 ### Replication
 
