@@ -2,12 +2,12 @@
 var Model = require('../model')
 var tape = require('tape')
 
-/*tape('clone() -> another instance', function (t) {
+tape('clone() -> another instance', function (t) {
   var a = new Model()
   var b = a.clone()
   t.equal(b.constructor, Model)
   t.end()
-})*/
+})
 
 tape('clone() -> deepEqual history', function (t) {
   var a = new Model()
