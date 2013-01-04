@@ -17,7 +17,7 @@
   "devDependencies": {
     "macgyver": "~1.10.1",
     "event-stream": "~3.0.10",
-    "tape": "0.0.5"
+    "tape": "~0.1.5"
   },
   "testling": {
     "files": "test/*.js",
