@@ -180,7 +180,7 @@ sb.createStream = function (opts) {
       //emit the number of streams that are remaining...
       //this will be used for memory management...
       self._streams --
-      self.emit('unstream', self._streams)
+      emit.call(self, 'unstream', self._streams)
     })
 
   if(opts && opts.tail === false) {
@@ -215,7 +215,7 @@ sb.createStream = function (opts) {
   }
 
   self.once('dispose', function () {
-    d._end()
+    d.end()
   })
 
   return outer
