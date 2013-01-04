@@ -230,3 +230,29 @@ sb.createReadStream = function (opts) {
 sb.dispose = function () {
   emit.call(this, 'dispose')
 }
+
+sb.setId = function (id) {
+  this.id = id
+  return this
+}
+
+//create another instance of this scuttlebutt,
+//that is in sync and attached to this instance.
+sb.clone = function () {
+  var A = this
+  var B = new (A.constructor)
+  B.setId(A.id) //same id. think this will work...
+
+  var a = A.createStream({wrapper: 'raw'})
+  var b = B.createStream({wrapper: 'raw'})
+
+  //all updates must be sync, so make sure pause never happens.
+  a.pause = b.pause = function noop(){}
+
+  a.pipe(b).pipe(a)
+  //resume both streams, so that the new instance is brought up to date immediately.
+  a.resume()
+  b.resume()
+
+  return B
+}
