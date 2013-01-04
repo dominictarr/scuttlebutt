@@ -39,7 +39,8 @@ function Scuttlebutt (opts) {
   var id = 'string' === typeof opts ? opts : opts && opts.id
   this.sources = {}
   this.setMaxListeners(Number.MAX_VALUE)
-
+  //count how many other instances we are replicating to.
+  this._streams = 0
   if(opts && opts.sign && opts.verify) {
     this.id      = opts.id || opts.createId()
     this._sign   = opts.sign
@@ -120,8 +121,9 @@ sb.createStream = function (opts) {
   var self = this
   //the sources for the remote end.
   var sources = {}, other
-
   var syncSent = false, syncRecv = false
+
+  this._streams ++
 
   opts = opts || {}
   var d = duplex()
@@ -175,6 +177,10 @@ sb.createStream = function (opts) {
     })
     .on('close', function () {
       self.removeListener('_update', onUpdate)
+      //emit the number of streams that are remaining...
+      //this will be used for memory management...
+      self._streams --
+      self.emit('unstream', self._streams)
     })
 
   if(opts && opts.tail === false) {
