@@ -1,4 +1,7 @@
 require('tape')('secure', function (t) {
+//don't run test in the browser, because don't have readFileSync
+if(process.title === 'browser') return t.end()
+
 var crypto = require('crypto')
 var fs = require('fs')
 var mac = require('macgyver')()
@@ -11,8 +14,8 @@ var PUBLIC2  = fs.readFileSync(__dirname + '/keys/test2.pem')
 
 var keys = {}
 
-var ids = {
-}
+var ids = {}
+
 function getKey(id) {
   return keys[id]
 }
