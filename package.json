@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "macgyver": "~1.10",
-    "event-stream": "~3.0.10",
+    "event-stream": "~3.0",
     "tape": "~0.1.5"
   },
   "testling": {
