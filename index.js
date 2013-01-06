@@ -144,7 +144,7 @@ sb.createStream = function (opts) {
     //send the history.
     //merge with the current list of sources.
     sources = data.clock
-    i.each(self.history(sources), d._data.bind(d))
+    i.each(self.history(sources), function (data) {d._data(data)})
     
     outer.emit('header', data)
     d._data('SYNC')
