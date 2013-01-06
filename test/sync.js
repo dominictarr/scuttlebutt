@@ -4,8 +4,7 @@ require('tape')('sync', function (t) {
 var EE = require('../events')
 var assert = require('assert')
 var es = require('event-stream')
-var mac = require('macgyver')()
-process.on('exit', mac.validate)
+var mac = require('macgyver')().autoValidate()
 
 var a = new EE()
 var b = new EE()
