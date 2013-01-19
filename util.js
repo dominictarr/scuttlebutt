@@ -21,7 +21,7 @@ function invalidUpdate(t) {
 }
 
 exports.validUpdate = function (t, update) {
-  if(!Array.isArray(update) return invalidUpdate(t)
+  if(!Array.isArray(update)) return invalidUpdate(t)
   if('string' !== typeof update[1] || 'number' !== typeof update[2])
     return invalidUpdate(t)
 }
