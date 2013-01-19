@@ -47,8 +47,6 @@ function Scuttlebutt (opts) {
   } else {
     this.id = id || u.createId()
   }
-
-  this.on('invalid', console.log)
 }
 
 var sb = Scuttlebutt.prototype
