@@ -19,12 +19,11 @@ function dutyOfSubclass() {
 }
 
 function validate (data) {
-  var ts = data[1], source = data[2]
-
-  if(  !Array.isArray(data) 
-    || 'string'    !== typeof source
-    || 'number'    !== typeof ts
-  ) return false
+  if(!(Array.isArray(data) 
+    && 'string' === typeof data[2]
+    && '__proto__'     !== data[2] //THIS WOULD BREAK STUFF
+    && 'number' === typeof data[1]
+  )) return false
 
   return true
 }
@@ -63,6 +62,8 @@ sb.localUpdate = function (trx) {
 }
 
 sb._update = function (update) {
+  if(!validate(update))
+    return this.emit('invalid', new Error('invalid update'))
   var ts = update[1]
   var source = update[2]
   //if this message is old for it's source,
@@ -190,8 +191,8 @@ sb.createStream = function (opts) {
       })
     })
   }
-  function onUpdate (update) { //key, value, source, ts
-    if(!u.filter(update, sources))
+  function onUpdate (update) { //value, source, ts
+    if(!validate(update) || !u.filter(update, sources))
       return
 
     d._data(update)
@@ -238,6 +239,7 @@ sb.dispose = function () {
 }
 
 sb.setId = function (id) {
+  if('__proto__' === id) throw new Error('__proto__ is invalid id')
   this.id = id
   return this
 }

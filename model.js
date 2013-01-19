@@ -16,11 +16,14 @@ function Model (opts) {
 var m = Model.prototype
 
 m.set = function (k, v) {
+  if(k==='__proto__') return u.protoIsIllegal(this)
   this.localUpdate([k, v])
   return this
 }
 
+
 m.get = function (k) {
+  if(k==='__proto__') return u.protoIsIllegal(this)
   if(this.store[k])
     return this.store[k][0][1]
 }
@@ -30,6 +33,7 @@ m.get = function (k) {
 
 m.applyUpdate = function (update) {
   var key = update[0][0]
+  if('__proto__' === key) return u.protoIsIllegal(this)
   //ignore if we already have a more recent value
   if('undefined' !== typeof this.store[key]
     && this.store[key][1] > update[1])

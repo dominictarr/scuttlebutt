@@ -10,3 +10,20 @@ exports.filter = function (update, sources) {
   var source = update[2]
   return (!sources || !sources[source] || sources[source] < ts)
 }
+
+exports.protoIsIllegal = function (s) {
+  s.emit('invalid', new Error('"__proto__" is illegal property name'))
+  return null
+}
+
+function invalidUpdate(t) {
+  t.emit('invalid', new Error('invalid update'))
+}
+
+exports.validUpdate = function (t, update) {
+  if(!Array.isArray(update) return invalidUpdate(t)
+  if('string' !== typeof update[1] || 'number' !== typeof update[2])
+    return invalidUpdate(t)
+}
+
+

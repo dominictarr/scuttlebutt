@@ -17,10 +17,18 @@ var emit = EventEmitter.prototype.emit
 var emitter = ReliableEventEmitter.prototype
 
 emitter.emit = function (event) {
+  if(event === '__proto__')
+    throw new Error('__proto__ is illegal event name')
   var args = [].slice.call(arguments)
   if(event == 'newListener')
     return emit.apply(this, args)
   return this.localUpdate(args)
+}
+
+var on = EventEmitter.prototype.on
+
+emitter.on = function (event, listener) {
+  
 }
 
 emitter.applyUpdate = function (update) {
