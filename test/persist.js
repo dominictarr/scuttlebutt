@@ -27,7 +27,7 @@ a.createReadStream(/*{wrapper: 'raw'}*/)
 
 b.on('_update', mac('_update').times(3))
 
-a.on('message', mac(console.log).times(3))
+a.on('message', mac(function (m) { console.log(m) }).times(3))
 
 var l = 3
 while(l--) {

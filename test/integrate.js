@@ -9,8 +9,8 @@ var s1, s2
 (s1 = g1.createStream())
   .pipe(s2 = g2.createStream()).pipe(s1)
 
-s1.on('data', console.log.bind(console, "s1"))
-s2.on('data', console.log.bind(console, "s2"))
+s1.on('data', function (d) { console.log("s1", d)})
+s2.on('data', function (d) { console.log("s2", d)})
 
 //I like to have streams that work sync.
 //if you can do that, you know it's tight.
