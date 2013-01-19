@@ -47,6 +47,8 @@ function Scuttlebutt (opts) {
   } else {
     this.id = id || u.createId()
   }
+
+  this.on('invalid', console.log)
 }
 
 var sb = Scuttlebutt.prototype
@@ -62,8 +64,7 @@ sb.localUpdate = function (trx) {
 }
 
 sb._update = function (update) {
-  if(!validate(update))
-    return this.emit('invalid', new Error('invalid update'))
+  //validated when it comes into the stream
   var ts = update[1]
   var source = update[2]
   //if this message is old for it's source,

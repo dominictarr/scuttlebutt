@@ -28,7 +28,9 @@ emitter.emit = function (event) {
 var on = EventEmitter.prototype.on
 
 emitter.on = function (event, listener) {
-  
+  if(event === '__proto__')
+    throw new Error('__proto__ is invalid event')
+  return on.call(this, event, listener)
 }
 
 emitter.applyUpdate = function (update) {
