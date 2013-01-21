@@ -28,6 +28,20 @@ m.get = function (k) {
     return this.store[k][0][1]
 }
 
+m.keys = function () {
+  var a = []
+  for (var k in this.store)
+    a.push(k)
+  return a
+}
+
+m.forEach =
+m.each = function (iter) {
+  for (var k in this.store)
+    iter(this.store[k][0][1], k, this.store)
+  return this
+}
+
 //return this history since sources.
 //sources is a hash of { ID: TIMESTAMP }
 
