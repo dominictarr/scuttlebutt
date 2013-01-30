@@ -2,14 +2,14 @@
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
   "name": "scuttlebutt",
   "description": "replicate data via scuttlebutt protocol",
-  "version": "5.5.9",
+  "version": "5.5.10",
   "homepage": "https://github.com/dominictarr/scuttlebutt",
   "repository": {
     "type": "git",
     "url": "git://github.com/dominictarr/scuttlebutt.git"
   },
   "dependencies": {
-    "iterate": "0.0.2",
+    "iterate": "0.1.0",
     "duplex": "~1.0.0",
     "stream-serializer": "0.0.3",
     "monotonic-timestamp": "0.0.7"
