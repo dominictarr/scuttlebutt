@@ -26,4 +26,11 @@ exports.validUpdate = function (t, update) {
     return invalidUpdate(t)
 }
 
-
+exports.sort = function (hist) {
+  return hist.sort(function (a, b) {
+    //sort by timestamps, then ids.
+    //there should never be a pair with equal timestamps
+    //and ids.
+    return a[1] - b[1] || (a[2] > b[2] ? 1 : -1)
+  })
+}

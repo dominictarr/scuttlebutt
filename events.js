@@ -54,12 +54,7 @@ emitter.history = function (filter) {
         h.push(e)
     })
   })
-  return h.sort(function (a, b) {
-    //sort my timestamps.
-    // so will be A1 B1 A2 B2,
-    // not A1 A2 B1 B2
-    return a[1] - b[1]
-  })
+  return u.sort(h)
 }
 
 
