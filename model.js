@@ -70,8 +70,6 @@ m.history = function (sources) {
     if(u.filter(e, sources))
       h.push(e)
   })
-  console.log(h)
-  console.log(u.sort(h))
   return u.sort(h)
 }
 
