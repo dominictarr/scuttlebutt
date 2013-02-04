@@ -41,11 +41,11 @@ function Scuttlebutt (opts) {
   //count how many other instances we are replicating to.
   this._streams = 0
   if(opts && opts.sign && opts.verify) {
-    this.id      = opts.id || opts.createId()
+    this.setId(opts.id || opts.createId())
     this._sign   = opts.sign
     this._verify = opts.verify
   } else {
-    this.id = id || u.createId()
+    this.setId(id || u.createId())
   }
 }
 
@@ -239,6 +239,7 @@ sb.dispose = function () {
 
 sb.setId = function (id) {
   if('__proto__' === id) throw new Error('__proto__ is invalid id')
+  if(id == null) throw new Error('null is not invalid id')
   this.id = id
   return this
 }
