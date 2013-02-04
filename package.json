@@ -12,7 +12,7 @@
     "iterate": "0.1.0",
     "duplex": "~1.0.0",
     "stream-serializer": "0.0.3",
-    "monotonic-timestamp": "0.0.7"
+    "monotonic-timestamp": "~0.0.8"
   },
   "devDependencies": {
     "macgyver": "~1.10",
