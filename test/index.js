@@ -45,9 +45,9 @@ test('updates appear in histroy', function (g, t) {
 })
 
 test('can filter histroy with {sources: timestamps}', function (g, t) {
-  var A  = createId()
-  var B  = createId()
-  var C  = createId()
+  var A  = '#A'
+  var B  = '#B'
+  var C  = '#C'
   var ts = timestamp()
 
   g._update([['A', 'aaa'], ts, A])
