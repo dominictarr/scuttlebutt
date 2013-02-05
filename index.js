@@ -244,6 +244,26 @@ sb.setId = function (id) {
   return this
 }
 
+function streamDone(stream, listener) {
+
+  function remove () {
+    stream.removeListener('end',   onDone)
+    stream.removeListener('error', onDone)
+    stream.removeListener('close',   onDone)
+  }
+  function onDone (arg) {
+    remove()
+    listener.call(this, arg)
+  }
+
+  //this makes emitter.removeListener(event, listener) still work
+  onDone.listener = listener
+
+  stream.on('end',   onDone)
+  stream.on('error', onDone)
+  stream.on('close', onDone)
+}
+
 //create another instance of this scuttlebutt,
 //that is in sync and attached to this instance.
 sb.clone = function () {
@@ -251,11 +271,18 @@ sb.clone = function () {
   var B = new (A.constructor)
   B.setId(A.id) //same id. think this will work...
 
+  A._clones = (A._clones || 0) + 1
+
   var a = A.createStream({wrapper: 'raw'})
   var b = B.createStream({wrapper: 'raw'})
 
   //all updates must be sync, so make sure pause never happens.
   a.pause = b.pause = function noop(){}
+
+  streamDone(b, function () {
+    A._clones--
+    emit.call(A, 'unclone', A._clones)
+  })
 
   a.pipe(b).pipe(a)
   //resume both streams, so that the new instance is brought up to date immediately.
@@ -264,3 +291,4 @@ sb.clone = function () {
 
   return B
 }
+
