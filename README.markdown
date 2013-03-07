@@ -11,7 +11,7 @@ Read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf
 
 Or, if you're lazy: http://en.wikipedia.org/wiki/Scuttlebutt (laziness will get you nowhere, btw)
 
-## Usage
+## Subclasses
 
 Scuttlebutt is intended to be subclassed into a variety of data-models.
 
@@ -33,14 +33,60 @@ subclasses:
 Any Scuttlebutt subclass is replicated with createStream.
 
 ``` js
-var s = new Scuttlebutt()
-var z = new Scuttlebutt()
-var zs = z.createStream()
+var Model = require('scuttlebutt/model')
+var net   = require('net')
 
-zs.pipe(s.createStream()).pipe(zs)
+var s = new Model()
+var z = new Model()
+
+net.createServer(function (stream) {
+
+  stream.pipe(s.createStream()).pipe(stream)
+
+}).listen(8000, function () {
+
+  var stream = net.connect(8000)
+  stream.pipe(z.createStream()).pipe(stream)  
+
+})
 ```
 
-Subclasses must implement at least `history` and `applyUpdate`.
+### Gotchas
+
+Scuttlebutt is always duplex.
+Scuttlebutt does a handshake on connecting to another scuttlebutt,
+and this won't work unless both sides are connected.
+
+#### Right
+
+``` js
+stream.pipe(model.createStream()).pipe(stream)
+```
+
+#### WRONG!
+
+``` js
+wrongStream.pipe(model2.createStream()
+```
+
+Also, when creating a server, scuttlebutt needs a stream for EACH connection.
+
+#### Right
+
+``` js
+net.createServer(function (stream) {
+  stream.pipe(model.createStream()).pipe(stream)
+}).listen(port)
+```
+
+#### WRONG!
+
+``` js
+var wrongStream = model.createStream()
+net.createServer(function (stream) {
+  stream.pipe(wrongStream).pipe(stream)
+}).listen(port)
+```
 
 ### Persistence
 
@@ -68,7 +114,9 @@ crashes before the history has been written some data will be lost
 You may use [kv](https://github.com/dominictarr/kv) to get streams 
 to local storage.
 
-## API
+## Implementing Custom Scuttlebutts
+
+The user must inherit from `Scuttlebutt` and provide an implementation of `history()` and `applyUpdate()`.
 
 ### Scuttlebutt#history(sources)
 
@@ -77,12 +125,6 @@ History must return an array of all known events from all sources
 That occur after the given timestamps for each source.
 
 The array MUST be in order by timestamp.
-
-``` js
-{ A: 0,
-  B: 2,
-  C: 3 }
-```
 
 ### Scuttlebutt#applyUpdate (update)
 
@@ -100,8 +142,9 @@ object using `opts.meta`.
 
 #### Examples
 
-``` js
+Connect two `Model` scuttlebutts locally.
 
+``` js
 var Model = require('scuttlebutt/model')
 
 var a = new Model()
