@@ -80,7 +80,7 @@ net.createServer(function (stream) {
 ```
 
 #### WRONG!
-
+this will use one stream for many connections!
 ``` js
 var wrongStream = model.createStream()
 net.createServer(function (stream) {
