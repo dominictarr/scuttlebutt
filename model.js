@@ -49,6 +49,7 @@ m.applyUpdate = function (update) {
   var key = update[0][0]
   if('__proto__' === key) return u.protoIsIllegal(this)
   //ignore if we already have a more recent value
+
   if('undefined' !== typeof this.store[key]
     && this.store[key][1] > update[1])
     return this.emit('_remove', update)
@@ -56,6 +57,7 @@ m.applyUpdate = function (update) {
   if(this.store[key]) this.emit('_remove', this.store[key])
 
   this.store[key] = update
+
   this.emit.apply(this, ['update'].concat(update))
   this.emit('change', key, update[0][1])
   this.emit('change:'+key, update[0][1])
@@ -74,8 +76,11 @@ m.history = function (sources) {
 }
 
 m.toJSON = function () {
-  var o = {}
-  for (var k in this.store)
-    o[k] = this.get(k)
+  var o = {}, notNull = false
+  for (var k in this.store) {
+    var v = this.get(k)
+    if(v != null)
+      o[k] = this.get(k)
+  }
   return o
 }
