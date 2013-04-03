@@ -88,6 +88,33 @@ net.createServer(function (stream) {
 }).listen(port)
 ```
 
+### Errors and use in PRODUCTION
+
+If have are using scuttlebutt in production, you must register
+on `'error'` listener in case someone sends invalid data to it.
+
+** Any stream that gets parsed should have an error listener! **
+
+``` js
+net.createServer(function (stream) {
+  var ms = m.createStream()
+  stream.pipe(ms).pipe(stream)
+  ms.on('error', function () {
+    stream.destroy()
+  })
+  stream.on('error', function () {
+    ms.destroy()
+  })
+}).listen(9999)
+```
+
+Otherwise, if someone tries to connect to port `9999` with a different
+protocol (say, HTTP) this will emit an error. You must handle this and
+close the connection / log the error.
+
+Also, you should handle errors on `stream`, stream may error if the client
+responsible for it crashes.
+
 ### Persistence
 
 Persist by saving to at least one writable stream.
