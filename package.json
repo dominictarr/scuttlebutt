@@ -2,7 +2,7 @@
   "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
   "name": "scuttlebutt",
   "description": "replicate data via scuttlebutt protocol",
-  "version": "5.5.18",
+  "version": "5.5.19",
   "homepage": "https://github.com/dominictarr/scuttlebutt",
   "repository": {
     "type": "git",
@@ -11,29 +11,34 @@
   "dependencies": {
     "iterate": "0.1.0",
     "duplex": "~1.0.0",
-    "stream-serializer": "0.0.3",
+    "stream-serializer": "1.0.0",
     "monotonic-timestamp": "~0.0.8"
   },
   "devDependencies": {
     "macgyver": "~1.10",
     "event-stream": "~3.0",
-    "tape": "~0.1.5"
+    "tape": "~0.1.5",
+    "request": "~2.16.6"
   },
   "testling": {
     "files": "test/*.js",
     "browsers": {
       "ie": [
         8,
-        9, 10
+        9,
+        10
       ],
       "firefox": [
-        17, 18
+        17,
+        18
       ],
       "chrome": [
-        23,24
+        23,
+        24
       ],
       "safari": [
-        5, 6
+        5,
+        6
       ],
       "opera": [
         12
