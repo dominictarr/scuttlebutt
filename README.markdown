@@ -225,7 +225,7 @@ Get a property.
 
 Set a property.
 
-#### on('update', function (key, value, source))
+#### on('update', function (change, timestamp, source))
 
 Emmitted when a property changes. 
 If `source !== this.id`
