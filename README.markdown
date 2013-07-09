@@ -141,6 +141,20 @@ crashes before the history has been written some data will be lost
 You may use [kv](https://github.com/dominictarr/kv) to get streams 
 to local storage.
 
+## read only mode.
+
+Sometimes you want to use scuttlebutt to send data one way,
+from a `master` instance to a `slave` instance.
+
+``` js
+var s1 = master.createStream({writable: false, sendClock: true})
+var s2 = slave.createStream({readable: false, sendClock: true})
+```
+
+`master` will emit updates, but not accept them, over this stream.
+This checking is per stream - so it's possible to attach `master` to 
+another master node and have master nodes replicate each way.
+
 ## Implementing Custom Scuttlebutts
 
 The user must inherit from `Scuttlebutt` and provide an implementation of `history()` and `applyUpdate()`.
