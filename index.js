@@ -98,7 +98,6 @@ sb._update = function (update) {
 
     if(self.applyUpdate(update))
       emit.call(self, '_update', update) //write to stream.
-
   }
 
   if(source !== this.id) {
@@ -161,6 +160,9 @@ sb.createStream = function (opts) {
     .on('_data', function (data) {
       //if it's an array, it's an update.
       if(Array.isArray(data)) {
+        //check whether we are accepting writes.
+        if(!d.writable)
+          return
         if(validate(data))
           return self._update(data)
       }
@@ -208,10 +210,14 @@ sb.createStream = function (opts) {
 
   if(d.readable) {
     d._data(outgoing)
-    if(!d.writable)
+    if(!d.writable && !opts.clock)
       start({clock:{}})
     if(tail)
       self.on('_update', onUpdate)
+  } else if (opts.sendClock) {
+    //send my current clock.
+    //so the other side knows what to send
+    d._data(outgoing)
   }
 
   self.once('dispose', function () {
