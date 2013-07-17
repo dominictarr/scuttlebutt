@@ -179,6 +179,7 @@ sb.createStream = function (opts) {
     })
     .on('close', function () {
       self.removeListener('_update', onUpdate)
+      self.removeListener('dispose', dispose)
       //emit the number of streams that are remaining...
       //this will be used for memory management...
       self._streams --
@@ -204,6 +205,10 @@ sb.createStream = function (opts) {
     sources[source] = ts
   }
 
+  function dispose () {
+    d.end()
+  }
+
   var outgoing = { id : self.id, clock : self.sources }
 
   if (opts && opts.meta) outgoing.meta = opts.meta
@@ -220,9 +225,7 @@ sb.createStream = function (opts) {
     d._data(outgoing)
   }
 
-  self.once('dispose', function () {
-    d.end()
-  })
+  self.once('dispose', dispose)
 
   return outer
 }
