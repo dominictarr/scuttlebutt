@@ -66,7 +66,7 @@ stream.pipe(model.createStream()).pipe(stream)
 #### WRONG!
 
 ``` js
-wrongStream.pipe(model2.createStream()
+wrongStream.pipe(model2.createStream())
 ```
 
 Also, when creating a server, scuttlebutt needs a stream for EACH connection.
