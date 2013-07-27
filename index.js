@@ -28,8 +28,6 @@ function validate (data) {
   return true
 }
 
-var emit = EventEmitter.prototype.emit
-
 inherits (Scuttlebutt, EventEmitter)
 
 function Scuttlebutt (opts) {
