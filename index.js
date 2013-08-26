@@ -141,15 +141,15 @@ sb.createStream = function (opts) {
     //send the history.
     //merge with the current list of sources.
     sources = data.clock
-    outer.emit('header', data)
-    self.on('_update', onUpdate)
 
     i.each(self.history(sources), function (data) {d._data(data)})
+    self.on('_update', onUpdate)
     
     d._data('SYNC')
-    //when we have sent all history
-    outer.emit('syncSent')
     syncSent = true
+    //when we have sent all history
+    outer.emit('header', data)
+    outer.emit('syncSent')
     //when we have recieved all histoyr
     //emit 'synced' when this stream has synced.
     if(syncRecv) outer.emit('sync'), outer.emit('synced')
