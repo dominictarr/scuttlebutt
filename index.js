@@ -143,6 +143,13 @@ sb.createStream = function (opts) {
     sources = data.clock
 
     i.each(self.history(sources), function (data) {d._data(data)})
+
+    //the _update listener must be set after the history is queued.
+    //otherwise there is a race between the first client message
+    //and the next update (which may come in on another stream)
+    //this problem will probably not be encountered until you have 
+    //thousands of scuttlebutts.
+        
     self.on('_update', onUpdate)
     
     d._data('SYNC')
@@ -218,14 +225,6 @@ sb.createStream = function (opts) {
     if(!d.writable && !opts.clock)
       start({clock:{}})
 
-    //if tail, and writable,
-    //the _update listener must be set after the history is queued.
-    //otherwise there is a race between the first client message
-    //and the next update (which may come in on another stream)
-    //this problem will probably not be encountered until you have 
-    //thousands of scuttlebutts.
-    else if(tail)
-      self.on('_update', onUpdate)
   } else if (opts.sendClock) {
     //send my current clock.
     //so the other side knows what to send
