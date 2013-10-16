@@ -140,7 +140,10 @@ sb.createStream = function (opts) {
     //when the digest is recieved from the other end,
     //send the history.
     //merge with the current list of sources.
-    if (!data || !data.clock) return d._end()
+    if (!data || !data.clock) {
+        d.emit('error');
+        return d._end()
+    }
 
     sources = data.clock
 
