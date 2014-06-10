@@ -27,6 +27,7 @@ subclasses:
   * [scuttlebucket](https://github.com/dominictarr/scuttlebucket) combine multiple scuttlebutts into one.
   * [expiry-model](https://github.com/Raynos/expiry-model) memory capped model with expiring keys.
   * [r-value](https://github.com/dominictarr/r-value) replicate a single value.
+  * [gossip-object](https://github.com/vigour-io/gossip-object) like scuttlebutt/model, but supports nested objects.
 
 ### Replication
 
