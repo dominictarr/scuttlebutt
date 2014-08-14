@@ -10,6 +10,7 @@ var c = new Model()
 
 var as = a.createStream()
 var bs = b.createStream()
+var b2s = b.createStream()
 var cs = c.createStream()
 
 var n = 3
@@ -24,7 +25,13 @@ bs.on('header', mac(function (h) {
   t.equal(h.id, ix === 0 ? a.id : c.id)
   ix ++
   end()
-}).times(2))
+}).once())
+
+b2s.on('header', mac(function (h) {
+  t.equal(h.id, ix === 0 ? a.id : c.id)
+  ix ++
+  end()
+}).once())
 
 cs.on('header', mac(function (h) {
   t.equal(h.id, b.id)
@@ -32,7 +39,7 @@ cs.on('header', mac(function (h) {
 }).once())
 
 as.pipe(bs).pipe(as)
-bs.pipe(cs).pipe(bs)
+b2s.pipe(cs).pipe(b2s)
 
 function end () {
   if(--n) return
