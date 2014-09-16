@@ -32,6 +32,7 @@ subclasses:
 ### Replication
 
 Any Scuttlebutt subclass is replicated with createStream.
+Create a server and then connect a client to it:
 
 ``` js
 var Model = require('scuttlebutt/model')
@@ -46,6 +47,7 @@ net.createServer(function (stream) {
 
 }).listen(8000, function () {
 
+  //then connect the client!
   var stream = net.connect(8000)
   stream.pipe(z.createStream()).pipe(stream)  
 
