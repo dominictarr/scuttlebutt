@@ -11,6 +11,11 @@ Read this: http://www.cs.cornell.edu/home/rvr/papers/flowgossip.pdf
 
 Or, if you're lazy: http://en.wikipedia.org/wiki/Scuttlebutt (laziness will get you nowhere, btw)
 
+## secure-scuttlebutt
+
+Creating this module eventually lead me to [secure-scuttlebutt](https://github.com/dominictarr/secure-scuttlebutt)
+it is based on a similar replication protocol as scuttlebutt, but puts security at the forefront.
+
 ## Subclasses
 
 Scuttlebutt is intended to be subclassed into a variety of data-models.
