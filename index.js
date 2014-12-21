@@ -38,13 +38,7 @@ function Scuttlebutt (opts) {
   this.setMaxListeners(Number.MAX_VALUE)
   //count how many other instances we are replicating to.
   this._streams = 0
-  if(opts && opts.sign && opts.verify) {
-    this.setId(opts.id || opts.createId())
-    this._sign   = opts.sign
-    this._verify = opts.verify
-  } else {
-    this.setId(id || u.createId())
-  }
+  this.setId(id || u.createId())
 }
 
 var sb = Scuttlebutt.prototype
@@ -74,42 +68,9 @@ sb._update = function (update) {
   this.sources[source] = ts
 
   var self = this
-  function didVerification (err, verified) {
 
-    // I'm not sure how what should happen if a async verification
-    // errors. if it's an key not found - that is a verification fail,
-    // not a error. if it's genunie error, really you should queue and 
-    // try again? or replay the message later
-    // -- this should be done my the security plugin though, not scuttlebutt.
-
-    if(err)
-      return emit.call(self, 'error', err)
-
-    if(!verified)
-      return emit.call(self, 'unverified_data', update)
-
-    // check if this message is older than
-    // the value we already have.
-    // do nothing if so
-    // emit an 'old_data' event because i'll want to track how many
-    // unnecessary messages are sent.
-
-    if(self.applyUpdate(update))
-      emit.call(self, '_update', update) //write to stream.
-  }
-
-  if(source !== this.id) {
-    if(this._verify)
-      this._verify(update, didVerification)
-    else
-      didVerification(null, true)
-  } else {
-    if(this._sign) {
-      //could make this async easily enough.
-      update[3] = this._sign(update)
-    }
-    didVerification(null, true)
-  }
+  if(this.applyUpdate(update))
+    emit.call(this, '_update', update) //write to stream.
 
   return true
 }
