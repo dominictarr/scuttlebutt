@@ -63,10 +63,12 @@ sb._update = function (update) {
   //validated when it comes into the stream
   var ts = update[1]
   var source = update[2]
-  //if this message is old for it's source,
-  //ignore it. it's out of order.
-  //each node must emit it's changes in order!
-  
+
+  //if this message is old for it's source, ignore it. it's out of
+  //order. each node must emit it's changes in order!
+  //emit an 'old_data' event because i'll want to track how many
+  //unnecessary messages are sent.
+
   var latest = this.sources[source]
   if(latest && latest >= ts)
     return emit.call(this, 'old_data', update), false
@@ -87,12 +89,6 @@ sb._update = function (update) {
 
     if(!verified)
       return emit.call(self, 'unverified_data', update)
-
-    // check if this message is older than
-    // the value we already have.
-    // do nothing if so
-    // emit an 'old_data' event because i'll want to track how many
-    // unnecessary messages are sent.
 
     if(self.applyUpdate(update))
       emit.call(self, '_update', update) //write to stream.
