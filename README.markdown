@@ -35,6 +35,7 @@ subclasses:
   * [gossip-object](https://github.com/vigour-io/gossip-object) like scuttlebutt/model, but supports nested objects.
   * [scuttleboat](https://github.com/kumavis/scuttleboat) a dynamic scuttlebucket!
   * [r-string](https://github.com/marcelklehr/r-string) character-wise collaborative text editing.
+
 ### Replication
 
 Any Scuttlebutt subclass is replicated with createStream.
