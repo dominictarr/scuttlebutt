@@ -213,7 +213,7 @@ s.pipe(b.createStream()).pipe(s)
 
 A reliable event emmitter. Multiple instances of an emitter
 may be connected to each other and will remember events,
-so that they may be resent after a disconnection or crash.
+so that they may be present after a disconnection or crash.
 
 With this approach it is also possible to persist events to disk,
 making them durable over crashes.
