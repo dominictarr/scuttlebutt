@@ -314,16 +314,16 @@ for a simple example implementation.
 
 `sign(update)` should sign the `update` with the instance's private key.
 `verify(update, cb)` should verify the update, using public key associated with the
-`source` field in the update. Verification may be asyncronous. `verify` must callback
+`source` field in the update. Verification may be asynchronous. `verify` must callback
 `cb(err, boolean)` where boolean indicates whether or not the signature is valid.
 Only callback in error in the most extreme circumstances. 
 If there was no known key for the required source then that should be treated as a 
 verification failure. If it is not possible to reach the key database (or whatever)
 then the request should be retried until it is available. 
 
-> Note: although the API supports asyncronous verification, 
+> Note: although the API supports asynchronous verification,
 > it's probably a good idea to load keys into memory so that messages can be verified
-> and signed syncronously.
+> and signed synchronously.
 
 `createId()` returns a new id for the current node. This is used in the example security 
 implementation to return a id that is a hash of the public key. This makes it impossible
