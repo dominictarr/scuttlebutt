@@ -167,7 +167,9 @@ another master node and have master nodes replicate each way.
 
 ## Implementing Custom Scuttlebutts
 
-The user must inherit from `Scuttlebutt` and provide an implementation of `history()` and `applyUpdate()`.
+A custom Scuttlebutt is a data model that inherits from `Scuttlebutt`. It must provide an implementation of `history()` and `applyUpdate()`.
+
+See [r-value](https://github.com/dominictarr/r-value) for a demonstration of the simplest possible Scuttlebutt, one that replicates a a single value.
 
 ### Scuttlebutt#history(sources)
 
@@ -178,6 +180,8 @@ That occur after the given timestamps for each source.
 The array MUST be in order by timestamp.
 
 ### Scuttlebutt#applyUpdate (update)
+
+Each update is of the form `[change, timestamp, source]` (see [Protocol](#Protocol) below).
 
 Possibly apply a given update to the subclasses model.
 Return 'true' if the update was applied. (See scuttlebutt/model.js
@@ -233,7 +237,7 @@ Add an event listener.
 
 ### scuttlebutt/model
 
-A replicateable `Model` object.
+A replicateable `Model` object, a simple key-value store.
 
 ``` js
 var Model = require('scuttlebutt/model')
