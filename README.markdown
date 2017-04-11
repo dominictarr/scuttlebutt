@@ -295,7 +295,7 @@ var m = new Model(security(keys, PRIVATE, PUBLIC))
 ## Security API
 
 When security is enabled, each scuttlebutt message is signed with a private key.
-It is then possible for any scuttlebutt instance to be confidant about the
+It is then possible for any scuttlebutt instance to be confident about the
 authenticity of the message by verifying it against the source's public key.
 
 This is possible even if the verifying node received the message from an intermediate node.
